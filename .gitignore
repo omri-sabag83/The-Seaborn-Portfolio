@@ -20,6 +20,5 @@ env/
 .vscode/
 .idea/
 
-# Locally downloaded or generated data (uncomment if data is fetched by a script,
-# not committed by hand)
-# data/
+# Locally downloaded data — fetched and cached by load_data.py, not committed
+data/
