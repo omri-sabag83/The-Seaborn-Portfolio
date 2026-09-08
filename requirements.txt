@@ -1,0 +1,14 @@
+# The Seaborn Portfolio — pinned dependencies
+# Environment: conda env `seaborn_portfolio`, Python 3.13.5
+# Install into that env with:  pip install -r requirements.txt
+
+seaborn==0.13.2          # the library this project walks through
+matplotlib==3.11.1       # seaborn draws on top of matplotlib; used for savefig and tweaks
+pandas==3.0.5            # data wrangling for every example
+numpy==2.5.3             # numeric helpers (transitive, pinned for reproducibility)
+scipy==1.18.1            # KDE, clustermap linkage, some confidence intervals
+statsmodels==0.15.0      # lowess / logistic fits for regplot, lmplot, residplot
+kagglehub==1.0.2         # downloads the two Kaggle datasets (see load_data.py)
+pyarrow==25.0.1          # Parquet cache under data/
+jupyterlab==4.6.3        # run / edit the notebooks
+ipykernel==7.3.0         # kernel registration for the notebooks
