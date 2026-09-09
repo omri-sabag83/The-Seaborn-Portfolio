@@ -51,8 +51,9 @@ well-chosen dataset, plus a short written note on its best use cases. The goal i
 
 - Built-in datasets: load directly with `sns.load_dataset(...)` in the notebook.
 - Two Kaggle datasets via `load_data.py` → `load_data("california_housing")` /
-  `load_data("sp500")`; cached to `data/*.parquet` (git-ignored). First download needs a
-  Kaggle API token (`~/.kaggle/kaggle.json`) — see the README.
+  `load_data("sp500")`; cached to `data/*.parquet` (git-ignored). First download needs Kaggle
+  credentials — the newer `~/.kaggle/access_token` (a single `KGAT_…` string) or the classic
+  `~/.kaggle/kaggle.json`; `kagglehub` reads either automatically. See the README.
 
 ## Chart coverage (target)
 

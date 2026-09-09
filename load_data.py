@@ -15,8 +15,9 @@ First call:  downloads the dataset with kagglehub, applies a light cleaning pass
 Later calls: read that Parquet file — fast and offline.
 
 First download needs Kaggle API credentials (one-time):
-    ~/.kaggle/kaggle.json  with your API token,
-    or the  KAGGLE_USERNAME / KAGGLE_KEY  environment variables.
+    ~/.kaggle/access_token  (a single KGAT_... string, newer accounts), or
+    ~/.kaggle/kaggle.json   (older accounts), or the
+    KAGGLE_USERNAME / KAGGLE_KEY  environment variables.
 See the README for how to create the token.
 
 Usage inside a notebook (run from the repo root):

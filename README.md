@@ -56,6 +56,8 @@ Most examples use Seaborn's built-in datasets (`sns.load_dataset(...)`). Two use
 and [`camnugent/sandp500`](https://www.kaggle.com/datasets/camnugent/sandp500) — downloaded
 on first run by `load_data.py` and cached under `data/` (git-ignored).
 
-That first download needs a Kaggle API token: on kaggle.com go to **Account → Create New
-Token**, save the file as `~/.kaggle/kaggle.json`, then `chmod 600 ~/.kaggle/kaggle.json`.
-(Alternatively set `KAGGLE_USERNAME` and `KAGGLE_KEY` in the environment.)
+That first download needs Kaggle credentials. On kaggle.com go to **Settings → API →
+Create New Token**; recent accounts get a single `KGAT_…` string — save it as
+`~/.kaggle/access_token` (`chmod 600`). Older accounts get a `kaggle.json` file — put that
+at `~/.kaggle/kaggle.json` instead. `kagglehub` reads either automatically. (Or set
+`KAGGLE_USERNAME` + `KAGGLE_KEY`, or `KAGGLE_API_TOKEN`, in the environment.)
