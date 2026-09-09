@@ -15,8 +15,11 @@ well-chosen dataset, plus a short written note on its best use cases. The goal i
   output). Per notebook: `conda run -n seaborn_portfolio jupyter nbconvert --to notebook
   --execute --inplace <notebook>`.
 - **Any install / upgrade (conda, pip, kernel) is proposed to the user as exact commands —
-  never run unprompted.** `pandas` resolved to 3.0.x, newer than seaborn 0.13.2 expects; if a
-  notebook breaks on it, flag it and propose pinning `pandas<3` rather than downgrading silently.
+  never run unprompted.**
+- **`pandas` is pinned `<3` (currently 2.3.3).** seaborn 0.13.2 mis-renders faceted
+  figure-level plots under pandas 3.x — `relplot` / `displot` / `catplot` draw the wrong
+  subset under each facet title (confirmed 2026-09-09, notebook 3 `catplot`). Do not bump
+  pandas to 3 unless seaborn ships a compatible release.
 
 ## Working rhythm
 
