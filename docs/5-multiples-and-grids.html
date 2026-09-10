@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5 · Small multiples &amp; multi-variable grids — The Seaborn Portfolio</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topnav"><a href="index.html">Home</a><a href="1-relationships.html">1&nbsp;Relationships</a><a href="2-distributions.html">2&nbsp;Distributions</a><a href="3-comparing-categories.html">3&nbsp;Comparing categories</a><a href="4-matrices-and-correlation.html">4&nbsp;Matrices &amp; correlation</a><a href="5-multiples-and-grids.html" class=here>5&nbsp;Multiples &amp; grids</a><a href="6-objects-interface.html">6&nbsp;Objects interface</a></nav>
+<main class="grouppage">
+<header>
+  <p class="crumb"><a href="index.html">Home</a> &rsaquo; 5 &middot; Small multiples &amp; multi-variable grids</p>
+  <h1>5 &middot; Small multiples &amp; multi-variable grids</h1>
+  <p class="question">what happens when the same view is repeated across subsets of the data — or when you want every pairwise view of several variables at once?</p>
+  <table><thead><tr><th>Function</th><th>Level</th><th>Dataset</th><th>In one line</th></tr></thead><tbody><tr><td><a href="#facetgrid"><code>FacetGrid</code></a></td><td>figure</td><td>tips</td><td>hand-built grid: <code>.map()</code> any plot across rows / columns</td></tr><tr><td><a href="#pairgrid"><code>PairGrid</code></a></td><td>figure</td><td>penguins</td><td>every variable vs every other, different plot per region</td></tr><tr><td><a href="#jointgrid"><code>JointGrid</code></a></td><td>figure</td><td>penguins</td><td>a bivariate plot plus its marginal distributions</td></tr><tr><td><a href="#pairplot"><code>pairplot</code></a></td><td>figure</td><td>penguins</td><td>the one-call version of <code>PairGrid</code></td></tr><tr><td><a href="#jointplot"><code>jointplot</code></a></td><td>figure</td><td>california_housing</td><td>the one-call version of <code>JointGrid</code></td></tr></tbody></table>
+  <div class="method"><p>the three <code>*Grid</code> classes are the manual engines; <code>pairplot</code> and <code>jointplot</code> are their one-line shortcuts, shown right after so the trade-off is visible. Each ends by saving a PNG to <code>images/</code>.</p>
+</div>
+  <details class="imports"><summary>Imports for this notebook</summary>
+  <div class="code"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">load_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"whitegrid"</span><span class="p">)</span>
+
+<span class="n">tips</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"tips"</span><span class="p">)</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"penguins"</span><span class="p">)</span>
+<span class="n">housing</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s2">"california_housing"</span><span class="p">)</span>
+
+<span class="n">PENGUIN_NUM</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"bill_length_mm"</span><span class="p">,</span> <span class="s2">"bill_depth_mm"</span><span class="p">,</span> <span class="s2">"flipper_length_mm"</span><span class="p">,</span> <span class="s2">"body_mass_g"</span><span class="p">]</span>
+</pre></div>
+</div></details>
+</header>
+<section class="chart" id="facetgrid"><h2><a href="#facetgrid"><code>FacetGrid</code></p>
+</a></h2><div class="desc"><p>Figure-level. Build an empty grid keyed by <code>row</code> / <code>col</code>, then <code>.map()</code> (or
+<code>.map_dataframe()</code>) a plotting function onto every panel. The engine behind
+<code>relplot</code> / <code>displot</code> / <code>catplot</code>.</p>
+</div><figure><img loading="lazy" src="assets/full/5_facetgrid.png" alt="FacetGrid"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">FacetGrid</span><span class="p">(</span>
+    <span class="n">tips</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="s2">"smoker"</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">"time"</span><span class="p">,</span>
+    <span class="n">margin_titles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">map_dataframe</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"total_bill"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"tip"</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"sex"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_legend</span><span class="p">()</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">"Total bill ($)"</span><span class="p">,</span> <span class="s2">"Tip ($)"</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"tips: tip vs. bill, faceted by smoker x time"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Small multiples of a plot the figure-level wrappers don't offer, or when you want to layer several <code>.map()</code> calls on the same grid.</li>
+<li><code>margin_titles=True</code>, <code>col_wrap=</code>, <code>sharex</code> / <code>sharey</code>, <code>despine=</code> for the usual adjustments.</li>
+<li><strong>Not</strong> needed when <code>relplot</code> / <code>displot</code> / <code>catplot</code> already draw what you want — those <em>are</em> a <code>FacetGrid</code> with a friendlier signature and a managed legend.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.FacetGrid.html"><code>FacetGrid</code> docs</a></p>
+</div></section><section class="chart" id="pairgrid"><h2><a href="#pairgrid"><code>PairGrid</code></p>
+</a></h2><div class="desc"><p>Figure-level. A square grid of every variable against every other, with the
+upper triangle, lower triangle and diagonal each controlled separately.</p>
+</div><figure><img loading="lazy" src="assets/full/5_pairgrid.png" alt="PairGrid"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">PairGrid</span><span class="p">(</span><span class="n">penguins</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">PENGUIN_NUM</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">diag_sharey</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">map_upper</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">map_lower</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">map_diag</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_legend</span><span class="p">()</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"penguins: PairGrid — scatter above, KDE below, histogram on the diagonal"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Choosing a <em>different</em> plot per region: raw scatter above the diagonal, smoothed density below, a 1-D distribution on it (<code>map_upper</code> / <code>map_lower</code> / <code>map_diag</code>).</li>
+<li>Any per-cell plot <code>pairplot</code> doesn't expose.</li>
+<li><strong>Not</strong> the quick route (that's <code>pairplot</code>), and it turns into a wall of tiny panels past ~6–8 variables.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.PairGrid.html"><code>PairGrid</code> docs</a></p>
+</div></section><section class="chart" id="jointgrid"><h2><a href="#jointgrid"><code>JointGrid</code></p>
+</a></h2><div class="desc"><p>Figure-level. One central bivariate plot with a marginal distribution on each
+axis — the joint layer and the marginal layers set independently.</p>
+</div><figure><img loading="lazy" src="assets/full/5_jointgrid.png" alt="JointGrid"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">JointGrid</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"bill_length_mm"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"bill_depth_mm"</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_joint</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_marginals</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"penguins: JointGrid — scatter + KDE marginals"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.01</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>A scatter (or any bivariate plot) where you also want to see each variable's own distribution, and the joint / marginal layers need different functions or extra layers (a regression plus a rug, say).</li>
+<li><code>plot_joint</code> and <code>plot_marginals</code> take any seaborn or matplotlib function.</li>
+<li><strong>Not</strong> worth the extra lines for a standard scatter-plus-histogram — <code>jointplot</code> does that in one call.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.JointGrid.html"><code>JointGrid</code> docs</a></p>
+</div></section><section class="chart" id="pairplot"><h2><a href="#pairplot"><code>pairplot</code></p>
+</a></h2><div class="desc"><p>Figure-level. The one-call <code>PairGrid</code>: a scatter matrix with a distribution on
+the diagonal. <code>corner=True</code> drops the redundant upper half.</p>
+</div><figure><img loading="lazy" src="assets/full/5_pairplot.png" alt="pairplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">pairplot</span><span class="p">(</span>
+    <span class="n">penguins</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">PENGUIN_NUM</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span>
+    <span class="n">diag_kind</span><span class="o">=</span><span class="s2">"kde"</span><span class="p">,</span> <span class="n">corner</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">plot_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"s"</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"penguins: pairplot — the one-call PairGrid"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>The fastest way to eyeball every pairwise relationship and every one-variable distribution at once, split by <code>hue</code>.</li>
+<li><code>diag_kind=&quot;hist&quot; | &quot;kde&quot;</code>, <code>kind=&quot;scatter&quot; | &quot;reg&quot;</code>, <code>corner=True</code>.</li>
+<li><strong>Not</strong> customisable past its keywords — move to <code>PairGrid</code> when you hit that wall — and impractical for many variables.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.pairplot.html"><code>pairplot</code> docs</a></p>
+</div></section><section class="chart" id="jointplot"><h2><a href="#jointplot"><code>jointplot</code></p>
+</a></h2><div class="desc"><p>Figure-level. The one-call <code>JointGrid</code>: <code>kind=</code> sets the central plot, the
+marginals follow automatically.</p>
+</div><figure><img loading="lazy" src="assets/full/5_jointplot.png" alt="jointplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">housing</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"median_income"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"median_house_value"</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"hex"</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"housing: jointplot(kind='hex') — the one-call JointGrid"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.01</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>A quick bivariate view with marginals: <code>kind=&quot;scatter&quot; | &quot;kde&quot; | &quot;hist&quot; | &quot;hex&quot; | &quot;reg&quot;</code>.</li>
+<li><code>kind=&quot;hex&quot;</code> (here) is the one to use at large N — it bins the points into a density instead of an unreadable blob, and the $500k value cap shows up as a bright horizontal band.</li>
+<li><strong>Not</strong> for more than one grouping, or bespoke joint / marginal layers — that's <code>JointGrid</code>.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.jointplot.html"><code>jointplot</code> docs</a></p>
+</div></section>
+
+<footer>Generated from <a href="https://github.com/omri-sabag83/The-Seaborn-Portfolio/blob/main/5_Multiples_And_Grids.ipynb"><code>5_Multiples_And_Grids.ipynb</code></a> &mdash;
+edit the notebook and rerun <code>build_site.py</code>.</footer>
+</main>
+
+</body>
+</html>

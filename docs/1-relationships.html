@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 · Relationships between variables — The Seaborn Portfolio</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topnav"><a href="index.html">Home</a><a href="1-relationships.html" class=here>1&nbsp;Relationships</a><a href="2-distributions.html">2&nbsp;Distributions</a><a href="3-comparing-categories.html">3&nbsp;Comparing categories</a><a href="4-matrices-and-correlation.html">4&nbsp;Matrices &amp; correlation</a><a href="5-multiples-and-grids.html">5&nbsp;Multiples &amp; grids</a><a href="6-objects-interface.html">6&nbsp;Objects interface</a></nav>
+<main class="grouppage">
+<header>
+  <p class="crumb"><a href="index.html">Home</a> &rsaquo; 1 &middot; Relationships between variables</p>
+  <h1>1 &middot; Relationships between variables</h1>
+  <p class="question">how do two variables move together — and how well does a fitted model describe that relationship?</p>
+  <table><thead><tr><th>Function</th><th>Level</th><th>Dataset</th><th>In one line</th></tr></thead><tbody><tr><td><a href="#scatterplot"><code>scatterplot</code></a></td><td>axes</td><td>penguins</td><td>raw points: the relationship between two numeric variables</td></tr><tr><td><a href="#lineplot"><code>lineplot</code></a></td><td>axes</td><td>fmri</td><td>a trend along an ordered axis, with a confidence band</td></tr><tr><td><a href="#relplot"><code>relplot</code></a></td><td>figure</td><td>sp500</td><td>scatter / line split into small multiples by a category</td></tr><tr><td><a href="#regplot"><code>regplot</code></a></td><td>axes</td><td>california_housing</td><td>a scatter with a fitted regression line</td></tr><tr><td><a href="#lmplot"><code>lmplot</code></a></td><td>figure</td><td>tips</td><td>faceted regression across subsets</td></tr><tr><td><a href="#residplot"><code>residplot</code></a></td><td>axes</td><td>california_housing</td><td>residuals of a fit — is the model adequate?</td></tr></tbody></table>
+  <div class="method"><p>one minimal, idiomatic example per function. Each example ends by saving a PNG to <code>images/</code>.</p>
+</div>
+  <details class="imports"><summary>Imports for this notebook</summary>
+  <div class="code"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">load_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="c1"># House style for the whole notebook. Kept deliberately light: this project is</span>
+<span class="c1"># about *which* chart to use, not fine visual polish.</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"whitegrid"</span><span class="p">)</span>
+
+<span class="c1"># Datasets used below. Built-ins come from seaborn; the two larger ones come</span>
+<span class="c1"># from Kaggle via load_data() (downloaded once, then read from data/).</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"penguins"</span><span class="p">)</span>
+<span class="n">fmri</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"fmri"</span><span class="p">)</span>
+<span class="n">tips</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"tips"</span><span class="p">)</span>
+<span class="n">housing</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s2">"california_housing"</span><span class="p">)</span>
+<span class="n">sp500</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s2">"sp500"</span><span class="p">)</span>
+</pre></div>
+</div></details>
+</header>
+<section class="chart" id="scatterplot"><h2><a href="#scatterplot"><code>scatterplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. One point per row: the most direct view of how two numeric variables
+relate. Extra variables map onto <code>hue</code>, <code>size</code>, <code>style</code> without changing the chart.</p>
+</div><figure><img loading="lazy" src="assets/full/1_scatterplot.png" alt="scatterplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"bill_length_mm"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"bill_depth_mm"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span>
+    <span class="n">s</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Penguin bill dimensions, by species"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Two continuous variables, one row per observation — the first look at whether and how they relate.</li>
+<li>Layering in a third or fourth variable through <code>hue</code> / <code>size</code> / <code>style</code>.</li>
+<li>Spotting clusters, outliers and non-linear shape <em>before</em> modelling anything.</li>
+<li><strong>Not</strong> when N is large and points pile up (overplotting) — switch to a 2-D <code>histplot</code>/<code>kdeplot</code>, or use <code>alpha</code> and sampling.</li>
+</ul>
+<p>Note the trap this chart catches: pooled across species the cloud slopes <em>down</em>, but
+within each species the relationship is <em>positive</em> (Simpson's paradox). <code>hue</code> is what
+reveals it.</p>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.scatterplot.html"><code>scatterplot</code> docs</a></p>
+</div></section><section class="chart" id="lineplot"><h2><a href="#lineplot"><code>lineplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. Connects points along an ordered axis. When there are several
+observations per x value it aggregates them (mean by default) and draws a
+confidence band.</p>
+</div><figure><img loading="lazy" src="assets/full/1_lineplot.png" alt="lineplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">fmri</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"timepoint"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"signal"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"event"</span><span class="p">,</span> <span class="n">errorbar</span><span class="o">=</span><span class="p">(</span><span class="s2">"ci"</span><span class="p">,</span> <span class="mi">95</span><span class="p">),</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"fMRI signal over time (mean ± 95% CI)"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>A response measured along an <em>ordered</em> axis — time, dose, position — where connecting points implies continuity.</li>
+<li>Data with repeats per x: <code>lineplot</code> collapses them to an estimator and shades the uncertainty automatically (<code>errorbar=(&quot;ci&quot;, 95)</code>, <code>&quot;se&quot;</code>, <code>(&quot;pi&quot;, 95)</code>, …).</li>
+<li>Comparing a handful of series with <code>hue</code>.</li>
+<li><strong>Not</strong> for unordered categories (the line invents a trend that isn't there), and not for dozens of overlapping series (&quot;spaghetti&quot;) — facet instead.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.lineplot.html"><code>lineplot</code> docs</a></p>
+</div></section><section class="chart" id="relplot"><h2><a href="#relplot"><code>relplot</code></p>
+</a></h2><div class="desc"><p>Figure-level. The same scatter or line (<code>kind=&quot;scatter&quot;</code> / <code>&quot;line&quot;</code>), but split
+into a grid of small multiples with <code>row</code> / <code>col</code>. Returns a <code>FacetGrid</code>.</p>
+</div><figure><img loading="lazy" src="assets/full/1_relplot.png" alt="relplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">tickers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"AAPL"</span><span class="p">,</span> <span class="s2">"MSFT"</span><span class="p">,</span> <span class="s2">"AMZN"</span><span class="p">,</span> <span class="s2">"NFLX"</span><span class="p">]</span>
+<span class="n">subset</span> <span class="o">=</span> <span class="n">sp500</span><span class="p">[</span><span class="n">sp500</span><span class="p">[</span><span class="s2">"ticker"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">tickers</span><span class="p">)]</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">relplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"date"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"close"</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">"ticker"</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"line"</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+    <span class="n">facet_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"sharey"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">"</span><span class="si">{col_name}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"Close ($)"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"Closing price, 2013–2018"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.03</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Taking a <code>scatterplot</code> / <code>lineplot</code> and asking the same question across many subgroups, when one overlaid plot would be too busy.</li>
+<li>Figure-level conveniences: it owns the whole figure, wraps facets (<code>col_wrap</code>), and places one shared legend outside the axes.</li>
+<li><code>facet_kws={&quot;sharey&quot;: False}</code> when panels live on very different scales (as here).</li>
+<li><strong>Not</strong> when you need to drop the plot onto a specific matplotlib <code>Axes</code> or combine it with other artists — use the axes-level <code>scatterplot</code> / <code>lineplot</code> for that.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.relplot.html"><code>relplot</code> docs</a></p>
+</div></section><section class="chart" id="regplot"><h2><a href="#regplot"><code>regplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. A scatter plus an ordinary-least-squares line with a bootstrap
+confidence band — a fit you can eyeball, in one call.</p>
+</div><figure><img loading="lazy" src="assets/full/1_regplot.png" alt="regplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">regplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">housing</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"median_income"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"median_house_value"</span><span class="p">,</span>
+    <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"alpha"</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+    <span class="n">line_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="s2">"C1"</span><span class="p">},</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"California house value vs. median income"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>A fast look at direction and rough strength of a relationship before building a real model.</li>
+<li>Checking for curvature with <code>order=2</code> (polynomial) or <code>lowess=True</code> (local regression).</li>
+<li><strong>Not</strong> a modelled fit: no coefficients, no R², no diagnostics. The flat strip along the top is the $500,001 cap baked into this dataset, and the way the spread widens with income is a warning the straight-line fit is too optimistic — which the next chart makes explicit.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.regplot.html"><code>regplot</code> docs</a></p>
+</div></section><section class="chart" id="lmplot"><h2><a href="#lmplot"><code>lmplot</code></p>
+</a></h2><div class="desc"><p>Figure-level. <code>regplot</code>'s fit, drawn on a <code>FacetGrid</code>: split by <code>col</code> / <code>row</code>
+and/or <code>hue</code> to ask whether the relationship holds in every subgroup.</p>
+</div><figure><img loading="lazy" src="assets/full/1_lmplot.png" alt="lmplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">tips</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"total_bill"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"tip"</span><span class="p">,</span>
+    <span class="n">col</span><span class="o">=</span><span class="s2">"smoker"</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"sex"</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">"Total bill ($)"</span><span class="p">,</span> <span class="s2">"Tip ($)"</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"Tip vs. bill, by party sex and smoking"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.03</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>&quot;Does this trend look the same for everyone?&quot; — one fitted line per facet / colour, on shared axes for easy comparison.</li>
+<li>Anything <code>regplot</code> accepts (<code>order</code>, <code>logistic</code>, <code>lowess</code>, <code>robust</code>) carried across the grid.</li>
+<li><strong>Not</strong> for a single panel (use <code>regplot</code>) or for scatters you don't want a regression on (use <code>relplot</code>).</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.lmplot.html"><code>lmplot</code> docs</a></p>
+</div></section><section class="chart" id="residplot"><h2><a href="#residplot"><code>residplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. Fits a line, then plots the <em>residuals</em> against the predictor. If the
+linear model fits well, this is a shapeless band around zero.</p>
+</div><figure><img loading="lazy" src="assets/full/1_residplot.png" alt="residplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">residplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">housing</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"median_income"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"median_house_value"</span><span class="p">,</span>
+    <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"alpha"</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Residuals of value ~ income (linear fit)"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"residual ($)"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Diagnosing a linear fit: random scatter around zero ⇒ a straight line is enough.</li>
+<li>Seeing what the fit <em>missed</em> — a smile / frown means curvature; a fan or funnel means the variance grows (heteroscedasticity).</li>
+<li>Here the residuals bow below zero in the middle (curvature) and fan out as income rises (heteroscedasticity): a straight line is the wrong shape. The crisp diagonal edge along the top is the $500,001 cap again — for those rows the residual is forced to shrink as income grows.</li>
+<li><strong>Not</strong> an outlier flag or a normality test — it only shows structure left over from the mean fit. Add <code>lowess=True</code> to draw the trend through the residuals.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.residplot.html"><code>residplot</code> docs</a></p>
+</div></section>
+
+<footer>Generated from <a href="https://github.com/omri-sabag83/The-Seaborn-Portfolio/blob/main/1_Relationships.ipynb"><code>1_Relationships.ipynb</code></a> &mdash;
+edit the notebook and rerun <code>build_site.py</code>.</footer>
+</main>
+
+</body>
+</html>

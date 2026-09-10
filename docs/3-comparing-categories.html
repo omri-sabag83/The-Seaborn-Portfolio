@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3 · Comparing a quantity across categories — The Seaborn Portfolio</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topnav"><a href="index.html">Home</a><a href="1-relationships.html">1&nbsp;Relationships</a><a href="2-distributions.html">2&nbsp;Distributions</a><a href="3-comparing-categories.html" class=here>3&nbsp;Comparing categories</a><a href="4-matrices-and-correlation.html">4&nbsp;Matrices &amp; correlation</a><a href="5-multiples-and-grids.html">5&nbsp;Multiples &amp; grids</a><a href="6-objects-interface.html">6&nbsp;Objects interface</a></nav>
+<main class="grouppage">
+<header>
+  <p class="crumb"><a href="index.html">Home</a> &rsaquo; 3 &middot; Comparing a quantity across categories</p>
+  <h1>3 &middot; Comparing a quantity across categories</h1>
+  <p class="question">how does a measure — its average, its whole distribution, or just the count — differ between groups?</p>
+  <table><thead><tr><th>Function</th><th>Level</th><th>Dataset</th><th>In one line</th></tr></thead><tbody><tr><td><a href="#stripplot"><code>stripplot</code></a></td><td>axes</td><td>tips</td><td>every observation as a point, random jitter (dots overlap)</td></tr><tr><td><a href="#swarmplot"><code>swarmplot</code></a></td><td>axes</td><td>tips</td><td>same data, points arranged so none overlap</td></tr><tr><td><a href="#boxplot"><code>boxplot</code></a></td><td>axes</td><td>tips</td><td>median, quartiles and outliers per category</td></tr><tr><td><a href="#violinplot"><code>violinplot</code></a></td><td>axes</td><td>titanic</td><td>a mirrored KDE — the full distribution shape per category</td></tr><tr><td><a href="#boxenplot"><code>boxenplot</code></a></td><td>axes</td><td>diamonds</td><td>like a boxplot but resolves the tails (large samples)</td></tr><tr><td><a href="#pointplot"><code>pointplot</code></a></td><td>axes</td><td>titanic</td><td>an estimate per category joined by lines, to read the trend</td></tr><tr><td><a href="#barplot"><code>barplot</code></a></td><td>axes</td><td>penguins</td><td>an aggregate (mean by default) per category, with error bars</td></tr><tr><td><a href="#countplot"><code>countplot</code></a></td><td>axes</td><td>titanic</td><td>how many rows fall in each category</td></tr><tr><td><a href="#catplot"><code>catplot</code></a></td><td>figure</td><td>tips</td><td>any of the above, faceted across subsets</td></tr></tbody></table>
+  <div class="method"><p>one minimal, idiomatic example per function. Each ends by saving a PNG to <code>images/</code>. The first eight come in families — the notes focus on which to reach for.</p>
+</div>
+  <details class="imports"><summary>Imports for this notebook</summary>
+  <div class="code"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"whitegrid"</span><span class="p">)</span>
+
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"penguins"</span><span class="p">)</span>
+<span class="n">tips</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"tips"</span><span class="p">)</span>
+<span class="n">titanic</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"titanic"</span><span class="p">)</span>
+<span class="n">diamonds</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"diamonds"</span><span class="p">)</span>
+
+<span class="n">CLASS_ORDER</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"First"</span><span class="p">,</span> <span class="s2">"Second"</span><span class="p">,</span> <span class="s2">"Third"</span><span class="p">]</span>
+</pre></div>
+</div></details>
+</header>
+<section class="chart" id="stripplot"><h2><a href="#stripplot"><code>stripplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. A scatter along a categorical axis: one dot per observation, placed
+with a small <strong>random</strong> horizontal jitter. Dots are allowed to overlap.</p>
+<p>The next two plots use the <em>same data</em> (<code>tips</code>, total bill by day) so the
+difference between the two is visible directly.</p>
+</div><figure><img loading="lazy" src="assets/full/3_stripplot.png" alt="stripplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">tips</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"day"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"total_bill"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"smoker"</span><span class="p">,</span> <span class="n">dodge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Total bill by day — random jitter, dots overlap (stripplot)"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Showing <em>all</em> the data along a category axis when you don't need every point separated — a quick &quot;what's actually in each group&quot;.</li>
+<li>Works at <strong>any N</strong>: it never refuses, it just gets denser. <code>alpha</code> and <code>jitter</code> manage the crowding; <code>dodge=True</code> splits <code>hue</code> groups.</li>
+<li>As a thin layer <em>under</em> a box or violin, so the summary and the raw points sit together.</li>
+</ul>
+<p><strong><code>stripplot</code> vs <code>swarmplot</code></strong> — same goal (draw every point), opposite method:</p>
+<table>
+<thead>
+<tr>
+  <th></th>
+  <th><code>stripplot</code></th>
+  <th><code>swarmplot</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Horizontal position</td>
+  <td><strong>random</strong> jitter</td>
+  <td><strong>computed</strong> so no two points touch</td>
+</tr>
+<tr>
+  <td>Overlap</td>
+  <td>yes</td>
+  <td>never</td>
+</tr>
+<tr>
+  <td>Read density from width?</td>
+  <td>no</td>
+  <td>yes — the pile is wider where there are more points</td>
+</tr>
+<tr>
+  <td>N per category</td>
+  <td>unlimited (turns into a smear)</td>
+  <td>a few hundred, then it warns and drops points</td>
+</tr>
+<tr>
+  <td>Cost</td>
+  <td>trivial</td>
+  <td>can be slow</td>
+</tr>
+</tbody>
+</table>
+<p>Reach for <code>stripplot</code> when N is large or it's just a backing layer; reach for
+<code>swarmplot</code> when N is small and the shape of the pile is the point.</p>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.stripplot.html"><code>stripplot</code> docs</a></p>
+</div></section><section class="chart" id="swarmplot"><h2><a href="#swarmplot"><code>swarmplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. The <strong>same points</strong> as the strip plot above, but each one is shifted
+along the category axis by a <em>computed</em> amount so that none overlap. The width of
+the resulting &quot;swarm&quot; at any height is proportional to how many points sit there —
+so the outline reads like a discrete violin.</p>
+</div><figure><img loading="lazy" src="assets/full/3_swarmplot.png" alt="swarmplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">swarmplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">tips</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"day"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"total_bill"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"smoker"</span><span class="p">,</span> <span class="n">dodge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Total bill by day — same data, points arranged so none overlap (swarmplot)"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>The most honest categorical view when it fits: every point drawn, none hidden, and the density is legible from the swarm's width — no binning, no smoothing.</li>
+<li>Small N — a few hundred points per category at most.</li>
+<li><strong>Not</strong> for large N: seaborn prints <code>X% of the points cannot be placed</code> and silently drops them, so the picture is quietly wrong. Switch to <code>violinplot</code>, or <code>boxplot</code> with a <code>stripplot</code> layer.</li>
+</ul>
+<p>Compared with the strip plot above: <code>stripplot</code> is faster and unbounded but its
+random jitter hides how many points overlap; <code>swarmplot</code> shows that exactly, at
+the cost of a hard ceiling on N.</p>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.swarmplot.html"><code>swarmplot</code> docs</a></p>
+</div></section><section class="chart" id="boxplot"><h2><a href="#boxplot"><code>boxplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. The five-number summary per category: median line, inter-quartile
+box, whiskers to 1.5×IQR, points beyond that.</p>
+</div><figure><img loading="lazy" src="assets/full/3_boxplot.png" alt="boxplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">tips</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"day"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"total_bill"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"smoker"</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Total bill by day and smoking status"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Comparing centre and spread across many groups at any N — compact, familiar, robust to outliers.</li>
+<li>Quick read of skew (median off-centre in the box) and of which groups overlap.</li>
+<li><strong>Not</strong> able to show <em>shape</em>: a two-humped group and a flat one can produce the same box. Overlay a <code>stripplot</code>, or use <code>violinplot</code>.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.boxplot.html"><code>boxplot</code> docs</a></p>
+</div></section><section class="chart" id="violinplot"><h2><a href="#violinplot"><code>violinplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. A KDE mirrored into a &quot;violin&quot; for each category — the distribution
+shape a boxplot can't show. <code>split=True</code> packs two <code>hue</code> levels into one violin.</p>
+</div><figure><img loading="lazy" src="assets/full/3_violinplot.png" alt="violinplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">titanic</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"class"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"age"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">CLASS_ORDER</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"sex"</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">inner</span><span class="o">=</span><span class="s2">"quart"</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Age distribution by class and sex"</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">move_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="s2">"upper right"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Showing skew and multiple modes across categories — the reason to prefer it over a boxplot.</li>
+<li><code>split=True</code> for a tight two-group comparison; <code>inner=&quot;quart&quot; | &quot;box&quot; | &quot;stick&quot; | &quot;point&quot;</code> picks the summary drawn inside.</li>
+<li><strong>Not</strong> for small groups (the KDE invents shape), and it bulges past hard limits — the violins above dip below age 0, which is impossible. Pass <code>cut=0</code> to clip at the observed min/max.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.violinplot.html"><code>violinplot</code> docs</a></p>
+</div></section><section class="chart" id="boxenplot"><h2><a href="#boxenplot"><code>boxenplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. A boxplot extended with successively smaller boxes for
+further-out quantiles, so the <em>tails</em> of a large sample are drawn instead of
+dumped as a cloud of outliers. (Also called a letter-value plot.)</p>
+</div><figure><img loading="lazy" src="assets/full/3_boxenplot.png" alt="boxenplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">CLARITY_ORDER</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"I1"</span><span class="p">,</span> <span class="s2">"SI2"</span><span class="p">,</span> <span class="s2">"SI1"</span><span class="p">,</span> <span class="s2">"VS2"</span><span class="p">,</span> <span class="s2">"VS1"</span><span class="p">,</span> <span class="s2">"VVS2"</span><span class="p">,</span> <span class="s2">"VVS1"</span><span class="p">,</span> <span class="s2">"IF"</span><span class="p">]</span>  <span class="c1"># worst -&gt; best</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">boxenplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">diamonds</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"clarity"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"price"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">CLARITY_ORDER</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">"C0"</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Diamond price by clarity (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">diamonds</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> stones)"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Large samples (thousands+) where a boxplot's single whisker throws away most of the interesting tail.</li>
+<li>Seeing how skew and tail-heaviness change across categories.</li>
+<li><strong>Not</strong> worth it for small N — the extra boxes are just noise; a plain <code>boxplot</code> says the same thing.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.boxenplot.html"><code>boxenplot</code> docs</a></p>
+</div></section><section class="chart" id="pointplot"><h2><a href="#pointplot"><code>pointplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. One estimate per category (mean by default) with an error bar,
+connected by lines across the category axis.</p>
+</div><figure><img loading="lazy" src="assets/full/3_pointplot.png" alt="pointplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">titanic</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"class"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"survived"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">CLASS_ORDER</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"sex"</span><span class="p">,</span> <span class="n">dodge</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">errorbar</span><span class="o">=</span><span class="p">(</span><span class="s2">"ci"</span><span class="p">,</span> <span class="mi">95</span><span class="p">),</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Survival rate by class and sex (mean ± 95% CI)"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Reading a <em>trend</em> across an ordered category, and interaction effects — do the <code>hue</code> lines stay parallel, or cross?</li>
+<li>A 0/1 outcome: the mean is a rate, so this is survival probability with a CI.</li>
+<li><strong>Not</strong> for nominal categories where &quot;between&quot; has no meaning — the connecting line implies an order that isn't there. Use <code>barplot</code>.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.pointplot.html"><code>pointplot</code> docs</a></p>
+</div></section><section class="chart" id="barplot"><h2><a href="#barplot"><code>barplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. One aggregate per category drawn from zero (mean by default; set
+<code>estimator</code>), with an error bar.</p>
+</div><figure><img loading="lazy" src="assets/full/3_barplot.png" alt="barplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"body_mass_g"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"sex"</span><span class="p">,</span> <span class="n">errorbar</span><span class="o">=</span><span class="s2">"sd"</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Mean body mass by species and sex (error bars = SD)"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Comparing a handful of summary values when the zero baseline is meaningful.</li>
+<li>Swappable statistic: <code>estimator=&quot;median&quot;</code>, <code>estimator=&quot;sum&quot;</code>, etc., with a matching <code>errorbar</code>.</li>
+<li><strong>Not</strong> for showing a distribution (it's one number per bar), and misleading when the quantity has no true zero — use <code>pointplot</code> then.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.barplot.html"><code>barplot</code> docs</a></p>
+</div></section><section class="chart" id="countplot"><h2><a href="#countplot"><code>countplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. A <code>barplot</code> whose statistic is &quot;how many rows&quot; — one bar per
+category or per <code>hue</code> combination. The categorical cousin of <code>histplot</code>.</p>
+</div><figure><img loading="lazy" src="assets/full/3_countplot.png" alt="countplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">titanic</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"class"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">CLASS_ORDER</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"survived"</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Passenger count by class and survival"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Frequencies of a categorical variable, and simple two-way cross-tabs via <code>hue</code>.</li>
+<li>A fast &quot;how is my data distributed across groups?&quot; before any analysis.</li>
+<li><strong>Not</strong> for an already-aggregated table — then it's <code>barplot(x=..., y=&quot;count&quot;)</code>.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.countplot.html"><code>countplot</code> docs</a></p>
+</div></section><section class="chart" id="catplot"><h2><a href="#catplot"><code>catplot</code></p>
+</a></h2><div class="desc"><p>Figure-level. The faceting front-end to all eight functions above, via
+<code>kind=&quot;strip&quot; | &quot;swarm&quot; | &quot;box&quot; | &quot;violin&quot; | &quot;boxen&quot; | &quot;point&quot; | &quot;bar&quot; | &quot;count&quot;</code>.</p>
+</div><figure><img loading="lazy" src="assets/full/3_catplot.png" alt="catplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">catplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">tips</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"day"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"total_bill"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"smoker"</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">"time"</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"box"</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"Total bill ($)"</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"Total bill by day, faceted by service time"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.03</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>&quot;Does this comparison hold across subgroups?&quot; — <code>row</code> / <code>col</code> build the grid, <code>kind=</code> picks the plot.</li>
+<li>Figure-level housekeeping: shared axes and a single legend outside the panels.</li>
+<li><strong>Not</strong> for one panel on a specific <code>Axes</code> — call the axes-level function directly.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.catplot.html"><code>catplot</code> docs</a></p>
+</div></section>
+
+<footer>Generated from <a href="https://github.com/omri-sabag83/The-Seaborn-Portfolio/blob/main/3_Comparing_Categories.ipynb"><code>3_Comparing_Categories.ipynb</code></a> &mdash;
+edit the notebook and rerun <code>build_site.py</code>.</footer>
+</main>
+
+</body>
+</html>
