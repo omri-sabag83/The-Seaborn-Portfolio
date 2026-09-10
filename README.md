@@ -4,10 +4,10 @@ A guided tour of the [Seaborn](https://seaborn.pydata.org/) plotting library: **
 type, once**, on a dataset chosen to show it at its best, each with a short note on when to
 reach for it.
 
-**→ The site lives in [`docs/`](docs/).** Open `docs/index.html` in a browser for a
-browsable homepage — every chart as a card, each linking to its figure, code, and "best for"
-note. Once GitHub Pages is enabled for this repo it will also be at
-`https://omri-sabag83.github.io/The-Seaborn-Portfolio/`.
+**→ Read it at <https://omri-sabag83.github.io/The-Seaborn-Portfolio/>** — a browsable
+homepage where every chart is a card linking to its figure, code, and "best for" note.
+(Served by GitHub Pages from [`docs/`](docs/), rebuilt on every push to `main`; you can also
+just open `docs/index.html` locally.)
 
 Inspired by Seaborn's own [example gallery](https://seaborn.pydata.org/examples/index.html).
 Where that gallery is a *recipe book* — the same function shown many ways, titled by how the

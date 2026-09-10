@@ -55,7 +55,8 @@ first.</p>
 <ul>
 <li>Reading a pattern off a two-way grid at a glance — here the summer peak (rows) and the steady year-on-year growth (columns) are both obvious.</li>
 <li><code>annot=True</code> prints the value in every cell (<code>fmt=&quot;d&quot;</code>, <code>&quot;.2f&quot;</code>, …) — legible up to a few dozen cells, not hundreds.</li>
-<li>Match the colormap to the data: a <strong>sequential</strong> ramp (<code>rocket</code>, <code>mako</code>, <code>viridis</code>) for magnitudes that build from a floor.</li>
+<li>Match the colormap to the data: a <strong>sequential</strong> ramp (<code>rocket</code>, <code>mako</code>, <code>viridis</code>) for magnitudes that build from a floor, as here.</li>
+<li>The palette changes for the next chart on purpose — it is a <em>diverging</em> one there, because correlations have a meaningful zero, while passenger counts do not. Matching the colormap to the data is the point, not consistency for its own sake.</li>
 <li><strong>Not</strong> for continuous x / y — that is a 2-D histogram or <code>kdeplot</code>. And when exact numbers matter more than the shape, a plain table beats a heatmap.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.heatmap.html"><code>heatmap</code> docs</a></p>
