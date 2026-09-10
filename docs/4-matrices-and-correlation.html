@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4 · Matrices &amp; correlation — The Seaborn Portfolio</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topnav"><a href="index.html">Home</a><a href="1-relationships.html">1&nbsp;Relationships</a><a href="2-distributions.html">2&nbsp;Distributions</a><a href="3-comparing-categories.html">3&nbsp;Comparing categories</a><a href="4-matrices-and-correlation.html" class=here>4&nbsp;Matrices &amp; correlation</a><a href="5-multiples-and-grids.html">5&nbsp;Multiples &amp; grids</a><a href="6-objects-interface.html">6&nbsp;Objects interface</a></nav>
+<main class="grouppage">
+<header>
+  <p class="crumb"><a href="index.html">Home</a> &rsaquo; 4 &middot; Matrices &amp; correlation</p>
+  <h1>4 &middot; Matrices &amp; correlation</h1>
+  <p class="question">what structure is there across a two-way grid of values, or across many variables at once?</p>
+  <table><thead><tr><th>Function</th><th>Level</th><th>Dataset</th><th>In one line</th></tr></thead><tbody><tr><td><a href="#heatmap-a-pivot-table"><code>heatmap</code> (pivot)</a></td><td>axes</td><td>flights</td><td>a wide table of one value, encoded as colour</td></tr><tr><td><a href="#heatmap-a-correlation-matrix"><code>heatmap</code> (correlation)</a></td><td>axes</td><td>california_housing</td><td><code>df.corr()</code> drawn as colour, diverging around 0</td></tr><tr><td><a href="#clustermap"><code>clustermap</code></a></td><td>figure</td><td>california_housing</td><td>the same matrix, rows/columns reordered by hierarchical clustering</td></tr></tbody></table>
+  <div class="method"><p><code>heatmap</code> gets its two standard uses (a pivot table and a correlation matrix); <code>clustermap</code> is fed that same correlation matrix so the &quot;before / after reordering&quot; comparison is direct. Each ends by saving a PNG to <code>images/</code>.</p>
+</div>
+  <details class="imports"><summary>Imports for this notebook</summary>
+  <div class="code"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">load_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"whitegrid"</span><span class="p">)</span>
+
+<span class="n">flights</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"flights"</span><span class="p">)</span>
+<span class="n">housing</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s2">"california_housing"</span><span class="p">)</span>
+
+<span class="c1"># The numeric columns of the housing data, and their correlation matrix —</span>
+<span class="c1"># reused by the second heatmap and by clustermap.</span>
+<span class="n">housing_num</span> <span class="o">=</span> <span class="n">housing</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="s2">"number"</span><span class="p">)</span>
+<span class="n">housing_corr</span> <span class="o">=</span> <span class="n">housing_num</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+</pre></div>
+</div></details>
+</header>
+<section class="chart" id="heatmap-a-pivot-table"><h2><a href="#heatmap-a-pivot-table"><code>heatmap</code> — a pivot table</p>
+</a></h2><div class="desc"><p>Axes-level. Takes data <strong>already in wide / matrix form</strong> and paints each value as
+a coloured cell. You do the reshape (<code>pivot</code>, <code>crosstab</code>, <code>groupby().unstack()</code>)
+first.</p>
+</div><figure><img loading="lazy" src="assets/full/4_heatmap_pivot.png" alt="heatmap (pivot)"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">flights_wide</span> <span class="o">=</span> <span class="n">flights</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">"month"</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">"year"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">"passengers"</span><span class="p">)</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span>
+    <span class="n">flights_wide</span><span class="p">,</span>
+    <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">"d"</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">"rocket"</span><span class="p">,</span>
+    <span class="n">cbar_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"label"</span><span class="p">:</span> <span class="s2">"passengers"</span><span class="p">},</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Air passengers by month and year"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Reading a pattern off a two-way grid at a glance — here the summer peak (rows) and the steady year-on-year growth (columns) are both obvious.</li>
+<li><code>annot=True</code> prints the value in every cell (<code>fmt=&quot;d&quot;</code>, <code>&quot;.2f&quot;</code>, …) — legible up to a few dozen cells, not hundreds.</li>
+<li>Match the colormap to the data: a <strong>sequential</strong> ramp (<code>rocket</code>, <code>mako</code>, <code>viridis</code>) for magnitudes that build from a floor.</li>
+<li><strong>Not</strong> for continuous x / y — that is a 2-D histogram or <code>kdeplot</code>. And when exact numbers matter more than the shape, a plain table beats a heatmap.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.heatmap.html"><code>heatmap</code> docs</a></p>
+</div></section><section class="chart" id="heatmap-a-correlation-matrix"><h2><a href="#heatmap-a-correlation-matrix"><code>heatmap</code> — a correlation matrix</p>
+</a></h2><div class="desc"><p>The other everyday use: <code>df.corr()</code> → <code>heatmap</code>, to see which variables move
+together.</p>
+</div><figure><img loading="lazy" src="assets/full/4_heatmap_corr.png" alt="heatmap (correlation)"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span>
+    <span class="n">housing_corr</span><span class="p">,</span>
+    <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">".2f"</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">"vlag"</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">square</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">cbar_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Pearson r"</span><span class="p">},</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Correlations among California housing variables"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>A fast scan for redundancy and for likely predictors before modelling.</li>
+<li>Use a <strong>diverging</strong> palette with <code>center=0</code> (and <code>vmin=-1, vmax=1</code>) so +0.4 and −0.4 look equal-and-opposite and zero is colourless — a sequential ramp here would be misleading.</li>
+<li><code>square=True</code> keeps the cells square; pass a triangular <code>mask</code> (via <code>np.triu</code>) to hide the redundant half.</li>
+<li>Read the blocks: <code>total_rooms</code>, <code>total_bedrooms</code>, <code>population</code> and <code>households</code> are all ~0.9 correlated (they all scale with block size) — a cue to combine or drop before a regression.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.heatmap.html"><code>heatmap</code> docs</a></p>
+</div></section><section class="chart" id="clustermap"><h2><a href="#clustermap"><code>clustermap</code></p>
+</a></h2><div class="desc"><p>Figure-level. A heatmap whose rows <strong>and</strong> columns are reordered by hierarchical
+clustering, with dendrograms drawn on the margins. Fed the same correlation
+matrix as above — so this is that heatmap, rearranged so related variables sit
+together.</p>
+</div><figure><img loading="lazy" src="assets/full/4_clustermap.png" alt="clustermap"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">clustermap</span><span class="p">(</span>
+    <span class="n">housing_corr</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">"vlag"</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">".2f"</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="n">dendrogram_ratio</span><span class="o">=</span><span class="mf">0.12</span><span class="p">,</span>
+    <span class="n">cbar_pos</span><span class="o">=</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.83</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.14</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"Same correlations, reordered by hierarchical clustering"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Letting the structure sort itself: similar rows / columns end up adjacent, so blocks of correlated variables form a visible square on the diagonal (here the four &quot;size&quot; columns collapse into one block, with <code>median_income</code> / <code>median_house_value</code> set apart).</li>
+<li>The dendrogram heights show <em>how</em> distinct the groups are.</li>
+<li><code>z_score=</code> / <code>standard_scale=</code> to normalise before clustering; <code>method=</code> and <code>metric=</code> change the linkage; sample the rows first if the matrix is tall (distances are O(n²)).</li>
+<li><strong>Not</strong> when the existing order carries meaning (time, rank, a designed sequence) — the reordering throws that away. Use a plain <code>heatmap</code> then.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.clustermap.html"><code>clustermap</code> docs</a></p>
+</div></section>
+
+<footer>Generated from <a href="https://github.com/omri-sabag83/The-Seaborn-Portfolio/blob/main/4_Matrices_And_Correlation.ipynb"><code>4_Matrices_And_Correlation.ipynb</code></a> &mdash;
+edit the notebook and rerun <code>build_site.py</code>.</footer>
+</main>
+
+</body>
+</html>

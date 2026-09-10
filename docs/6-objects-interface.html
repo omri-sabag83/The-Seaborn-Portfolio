@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6 · The objects interface (`seaborn.objects`) — The Seaborn Portfolio</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topnav"><a href="index.html">Home</a><a href="1-relationships.html">1&nbsp;Relationships</a><a href="2-distributions.html">2&nbsp;Distributions</a><a href="3-comparing-categories.html">3&nbsp;Comparing categories</a><a href="4-matrices-and-correlation.html">4&nbsp;Matrices &amp; correlation</a><a href="5-multiples-and-grids.html">5&nbsp;Multiples &amp; grids</a><a href="6-objects-interface.html" class=here>6&nbsp;Objects interface</a></nav>
+<main class="grouppage">
+<header>
+  <p class="crumb"><a href="index.html">Home</a> &rsaquo; 6 &middot; The objects interface (<code>seaborn.objects</code>)</p>
+  <h1>6 &middot; The objects interface (<code>seaborn.objects</code>)</h1>
+  <p class="question"></p>
+  <table><thead><tr><th>#</th><th>Composition</th><th>Rebuilds</th></tr></thead><tbody><tr><td>1</td><td><a href="#1-so-dot-a-scatter"><code>so.Dot</code></a></td><td>a scatter</td></tr><tr><td>2</td><td><a href="#2-so-line-so-agg-an-aggregated-trend-line"><code>so.Line</code> + <code>so.Agg</code></a></td><td>an aggregated trend line</td></tr><tr><td>3</td><td><a href="#3-so-bar-so-agg-so-dodge-grouped-bars"><code>so.Bar</code> + <code>so.Agg</code> + <code>so.Dodge</code></a></td><td>grouped bars</td></tr><tr><td>4</td><td><a href="#4-so-line-so-band-so-est-a-line-with-a-confidence-band"><code>so.Line</code> + <code>so.Band</code> + <code>so.Est</code></a></td><td>a line with a confidence band</td></tr><tr><td>5</td><td><a href="#5-so-dots-so-jitter-a-strip-plot"><code>so.Dots</code> + <code>so.Jitter</code></a></td><td>a strip plot</td></tr><tr><td>6</td><td><a href="#6-so-bars-so-hist-a-histogram"><code>so.Bars</code> + <code>so.Hist</code></a></td><td>a histogram</td></tr><tr><td>7</td><td><a href="#7-so-dots-so-line-so-polyfit-a-fit-over-raw-points"><code>so.Dots</code> + (<code>so.Line</code> + <code>so.PolyFit</code>)</a></td><td>a regression fit over raw points</td></tr><tr><td>8</td><td><a href="#8-so-area-so-agg-so-stack-a-stacked-area-chart"><code>so.Area</code> + <code>so.Agg</code> + <code>so.Stack</code></a></td><td>a stacked area chart</td></tr><tr><td>9</td><td><a href="#9-facet-col-small-multiples"><code>.facet(col=…)</code></a></td><td>small multiples</td></tr><tr><td>10</td><td><a href="#10-pair-and-so-text"><code>.pair(…)</code> and <code>so.Text</code></a></td><td>a scatter matrix; labelled points</td></tr></tbody></table>
+  <div class="method"><p>one minimal composition per row; each ends with <code>.save(&quot;images/6_*.png&quot;)</code>.</p>
+</div>
+  <details class="imports"><summary>Imports for this notebook</summary>
+  <div class="code"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn.objects</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">so</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">load_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="c1"># The objects interface has its own theme; point it at the same house style.</span>
+<span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">theme</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">axes_style</span><span class="p">(</span><span class="s2">"whitegrid"</span><span class="p">))</span>
+
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"penguins"</span><span class="p">)</span>
+<span class="n">fmri</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"fmri"</span><span class="p">)</span>
+<span class="n">healthexp</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"healthexp"</span><span class="p">)</span>
+<span class="n">housing</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s2">"california_housing"</span><span class="p">)</span>
+<span class="n">sp500</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s2">"sp500"</span><span class="p">)</span>
+</pre></div>
+</div></details>
+</header>
+<section class="chart" id="1-so-dot-a-scatter"><h2><a href="#1-so-dot-a-scatter">1 · <code>so.Dot</code> — a scatter</p>
+</a></h2><div class="desc"><p>The mark on its own, no stat: one dot per row.</p>
+</div><figure><img loading="lazy" src="assets/full/6_01_dot.png" alt="so.Dot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"bill_length_mm"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"bill_depth_mm"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"species"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Dot</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"so.Dot — a scatter"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section><section class="chart" id="2-so-line-so-agg-an-aggregated-trend-line"><h2><a href="#2-so-line-so-agg-an-aggregated-trend-line">2 · <code>so.Line</code> + <code>so.Agg</code> — an aggregated trend line</p>
+</a></h2><div class="desc"><p><code>Agg</code> collapses the many <code>close</code> values on each date to their mean, then <code>Line</code> connects them — a whole-market average.</p>
+</div><figure><img loading="lazy" src="assets/full/6_02_line_agg.png" alt="so.Line + so.Agg"></figure><div class="code"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">sp500</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"date"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"close"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Line</span><span class="p">(),</span> <span class="n">so</span><span class="o">.</span><span class="n">Agg</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"so.Line + so.Agg — mean S&amp;P 500 close, by date"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section><section class="chart" id="3-so-bar-so-agg-so-dodge-grouped-bars"><h2><a href="#3-so-bar-so-agg-so-dodge-grouped-bars">3 · <code>so.Bar</code> + <code>so.Agg</code> + <code>so.Dodge</code> — grouped bars</p>
+</a></h2><div class="desc"><p><code>Agg</code> gives the mean per group, <code>Dodge</code> moves the <code>sex</code> bars side by side.</p>
+</div><figure><img loading="lazy" src="assets/full/6_03_bar_agg_dodge.png" alt="so.Bar + so.Agg + so.Dodge"></figure><div class="code"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"body_mass_g"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"sex"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Bar</span><span class="p">(),</span> <span class="n">so</span><span class="o">.</span><span class="n">Agg</span><span class="p">(),</span> <span class="n">so</span><span class="o">.</span><span class="n">Dodge</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"so.Bar + so.Agg + so.Dodge — mean body mass by species and sex"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section><section class="chart" id="4-so-line-so-band-so-est-a-line-with-a-confidence-band"><h2><a href="#4-so-line-so-band-so-est-a-line-with-a-confidence-band">4 · <code>so.Line</code> + <code>so.Band</code> + <code>so.Est</code> — a line with a confidence band</p>
+</a></h2><div class="desc"><p><code>Est</code> computes the mean and a 95% CI; one layer draws the line at the mean, the other fills the band.</p>
+</div><figure><img loading="lazy" src="assets/full/6_04_line_band_est.png" alt="so.Line + so.Band + so.Est"></figure><div class="code"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">fmri</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"timepoint"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"signal"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"event"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Line</span><span class="p">(),</span> <span class="n">so</span><span class="o">.</span><span class="n">Est</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Band</span><span class="p">(),</span> <span class="n">so</span><span class="o">.</span><span class="n">Est</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"so.Line + so.Band + so.Est — mean signal with 95% CI"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section><section class="chart" id="5-so-dots-so-jitter-a-strip-plot"><h2><a href="#5-so-dots-so-jitter-a-strip-plot">5 · <code>so.Dots</code> + <code>so.Jitter</code> — a strip plot</p>
+</a></h2><div class="desc"><p><code>Jitter</code> is a Move: it offsets the dots along the category axis so they don't sit on top of each other.</p>
+</div><figure><img loading="lazy" src="assets/full/6_05_dots_jitter.png" alt="so.Dots + so.Jitter"></figure><div class="code"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"body_mass_g"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"sex"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Dots</span><span class="p">(),</span> <span class="n">so</span><span class="o">.</span><span class="n">Jitter</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"so.Dots + so.Jitter — a strip plot"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section><section class="chart" id="6-so-bars-so-hist-a-histogram"><h2><a href="#6-so-bars-so-hist-a-histogram">6 · <code>so.Bars</code> + <code>so.Hist</code> — a histogram</p>
+</a></h2><div class="desc"><p><code>Hist</code> is a Stat: it bins <code>x</code> and counts. <code>Bars</code> (plural) draws the contiguous bars; <code>Bar</code> is for a handful of categorical bars.</p>
+</div><figure><img loading="lazy" src="assets/full/6_06_bars_hist.png" alt="so.Bars + so.Hist"></figure><div class="code"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">housing</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"median_house_value"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Bars</span><span class="p">(),</span> <span class="n">so</span><span class="o">.</span><span class="n">Hist</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"so.Bars + so.Hist — a histogram"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section><section class="chart" id="7-so-dots-so-line-so-polyfit-a-fit-over-raw-points"><h2><a href="#7-so-dots-so-line-so-polyfit-a-fit-over-raw-points">7 · <code>so.Dots</code> + (<code>so.Line</code> + <code>so.PolyFit</code>) — a fit over raw points</p>
+</a></h2><div class="desc"><p>Two layers on one plot: the raw scatter, then a degree-2 polynomial fit. Layering like this is where the grammar shines.</p>
+</div><figure><img loading="lazy" src="assets/full/6_07_polyfit.png" alt="so.Dots + (so.Line + so.PolyFit)"></figure><div class="code"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">housing</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"median_income"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"median_house_value"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Dots</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">.08</span><span class="p">,</span> <span class="n">pointsize</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Line</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">"C1"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="n">so</span><span class="o">.</span><span class="n">PolyFit</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"so.Dots + (so.Line + so.PolyFit) — raw points with a degree-2 fit"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section><section class="chart" id="8-so-area-so-agg-so-stack-a-stacked-area-chart"><h2><a href="#8-so-area-so-agg-so-stack-a-stacked-area-chart">8 · <code>so.Area</code> + <code>so.Agg</code> + <code>so.Stack</code> — a stacked area chart</p>
+</a></h2><div class="desc"><p><code>Stack</code> is a Move: it piles each country's area on top of the previous one, so the top edge is the total.</p>
+</div><figure><img loading="lazy" src="assets/full/6_08_area_stack.png" alt="so.Area + so.Agg + so.Stack"></figure><div class="code"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">healthexp</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"Year"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"Spending_USD"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"Country"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Area</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">.7</span><span class="p">),</span> <span class="n">so</span><span class="o">.</span><span class="n">Agg</span><span class="p">(),</span> <span class="n">so</span><span class="o">.</span><span class="n">Stack</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"so.Area + so.Agg + so.Stack — health spending per capita, stacked by country"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section><section class="chart" id="9-facet-col-small-multiples"><h2><a href="#9-facet-col-small-multiples">9 · <code>.facet(col=…)</code> — small multiples</p>
+</a></h2><div class="desc"><p>Faceting is a method on <code>Plot</code>, not a separate object — one call splits the same layers across panels, one per island. (A string <code>title</code> would repeat in every panel, so the facet variable's values serve as the panel headers.)</p>
+</div><figure><img loading="lazy" src="assets/full/6_09_facet.png" alt=".facet(col=…)"></figure><div class="code"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"bill_length_mm"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"bill_depth_mm"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"species"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Dot</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">facet</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">"island"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section><section class="chart" id="10-pair-and-so-text"><h2><a href="#10-pair-and-so-text">10 · <code>.pair(…)</code> and <code>so.Text</code></p>
+</a></h2><div class="desc"><p><code>.pair()</code> builds a scatter-matrix-style grid from lists of variables. <code>so.Text</code> is a mark that draws a label at each point (from a <code>text=</code> channel).</p>
+</div><figure><img loading="lazy" src="assets/full/6_10_pair.png" alt=".pair(…) and so.Text"><img loading="lazy" src="assets/full/6_10_text.png" alt=".pair(…) and so.Text"></figure><div class="code"><div class="highlight"><pre><span></span><span class="c1"># .pair() builds the grid; like .facet(), a string title would repeat per panel.</span>
+<span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">penguins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"species"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">pair</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="s2">"bill_length_mm"</span><span class="p">,</span> <span class="s2">"flipper_length_mm"</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s2">"bill_depth_mm"</span><span class="p">,</span> <span class="s2">"body_mass_g"</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Dot</span><span class="p">())</span>
+<span class="p">)</span>
+</pre></div>
+</div><div class="code"><div class="highlight"><pre><span></span><span class="n">species_means</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">penguins</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)[[</span><span class="s2">"flipper_length_mm"</span><span class="p">,</span> <span class="s2">"body_mass_g"</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="p">(</span>
+    <span class="n">so</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">species_means</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"flipper_length_mm"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"body_mass_g"</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">"species"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">pointsize</span><span class="o">=</span><span class="mi">12</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="n">valign</span><span class="o">=</span><span class="s2">"bottom"</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">8</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="mi">185</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="mi">3550</span><span class="p">,</span> <span class="mi">5400</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"so.Text — label each point"</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div></section>
+<section class="chart trailing"><h3>When to reach for the objects interface</h3>
+<p><strong>Use it when:</strong></p>
+<ul>
+<li>You're <strong>layering</strong> several things on one plot (raw points + a fit, a line + its
+band, bars + labels) — <code>.add()</code> stacks cleanly, where the classic API needs
+several functions that don't always agree on defaults.</li>
+<li>You want <strong>one consistent syntax</strong> for everything: the same <code>Plot</code> /
+<code>.add()</code> / <code>.facet()</code> / <code>.pair()</code> / <code>.scale()</code> grammar covers scatter, line,
+bar, area, histogram… no separate <code>scatterplot</code> / <code>lineplot</code> / <code>barplot</code>
+signatures to remember.</li>
+<li>You want to <strong>swap a Stat or Move without changing the Mark</strong> — <code>so.Bar()</code>
+with <code>so.Hist()</code> is a histogram, with <code>so.Agg()</code> a bar chart.</li>
+</ul>
+<p><strong>Stick with the classic functions when:</strong></p>
+<ul>
+<li>You need something the objects interface doesn't have yet — <code>PairGrid</code>-style
+per-region control, <code>clustermap</code>, <code>jointplot</code>'s marginal axes, <code>regplot</code>'s
+bootstrap CI.</li>
+<li>You're leaning on the large body of examples and Stack Overflow answers written
+for the function API.</li>
+<li>You want a finished styled figure in one line — the classic figure-level
+functions still do more out of the box.</li>
+</ul>
+<p>The two APIs share the same theme and colour system and can be mixed in the same
+notebook.</p>
+</section>
+<footer>Generated from <a href="https://github.com/omri-sabag83/The-Seaborn-Portfolio/blob/main/6_Objects_Interface.ipynb"><code>6_Objects_Interface.ipynb</code></a> &mdash;
+edit the notebook and rerun <code>build_site.py</code>.</footer>
+</main>
+
+</body>
+</html>

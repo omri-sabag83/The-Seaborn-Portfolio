@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2 · Distributions — The Seaborn Portfolio</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="topnav"><a href="index.html">Home</a><a href="1-relationships.html">1&nbsp;Relationships</a><a href="2-distributions.html" class=here>2&nbsp;Distributions</a><a href="3-comparing-categories.html">3&nbsp;Comparing categories</a><a href="4-matrices-and-correlation.html">4&nbsp;Matrices &amp; correlation</a><a href="5-multiples-and-grids.html">5&nbsp;Multiples &amp; grids</a><a href="6-objects-interface.html">6&nbsp;Objects interface</a></nav>
+<main class="grouppage">
+<header>
+  <p class="crumb"><a href="index.html">Home</a> &rsaquo; 2 &middot; Distributions</p>
+  <h1>2 &middot; Distributions</h1>
+  <p class="question">what is the shape, centre and spread of a single variable — and how does that differ from group to group?</p>
+  <table><thead><tr><th>Function</th><th>Level</th><th>Dataset</th><th>In one line</th></tr></thead><tbody><tr><td><a href="#histplot"><code>histplot</code></a></td><td>axes</td><td>penguins</td><td>binned counts: the classic histogram</td></tr><tr><td><a href="#kdeplot"><code>kdeplot</code></a></td><td>axes</td><td>penguins / california_housing</td><td>a smooth density estimate (1-D or 2-D)</td></tr><tr><td><a href="#ecdfplot"><code>ecdfplot</code></a></td><td>axes</td><td>penguins</td><td>the empirical cumulative distribution — no bins, no smoothing</td></tr><tr><td><a href="#rugplot"><code>rugplot</code></a></td><td>axes</td><td>penguins</td><td>tick marks for individual observations, layered under another plot</td></tr><tr><td><a href="#displot"><code>displot</code></a></td><td>figure</td><td>tips</td><td>any of the above, faceted across subsets</td></tr></tbody></table>
+  <div class="method"><p>one minimal, idiomatic example per function (<code>kdeplot</code> gets a 1-D and a 2-D example). Each ends by saving a PNG to <code>images/</code>.</p>
+</div>
+  <details class="imports"><summary>Imports for this notebook</summary>
+  <div class="code"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">load_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"whitegrid"</span><span class="p">)</span>
+
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"penguins"</span><span class="p">)</span>
+<span class="n">tips</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">"tips"</span><span class="p">)</span>
+<span class="n">housing</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s2">"california_housing"</span><span class="p">)</span>
+</pre></div>
+</div></details>
+</header>
+<section class="chart" id="histplot"><h2><a href="#histplot"><code>histplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. Splits the range into bins and counts how many observations land in
+each — the default first look at a distribution's shape.</p>
+</div><figure><img loading="lazy" src="assets/full/2_histplot.png" alt="histplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"flipper_length_mm"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="s2">"stack"</span><span class="p">,</span>
+    <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Penguin flipper length, stacked by species"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Showing where the mass of a single variable sits: centre, spread, skew, multiple modes, gaps.</li>
+<li><code>bins</code> / <code>binwidth</code> set the resolution — too few hides structure, too many shows noise.</li>
+<li>Comparing groups with <code>hue</code> + <code>multiple=</code>: <code>&quot;layer&quot;</code> (translucent overlay), <code>&quot;stack&quot;</code> (as here), <code>&quot;dodge&quot;</code>, <code>&quot;fill&quot;</code> (100 % composition).</li>
+<li><code>stat=&quot;density&quot;</code> or <code>&quot;probability&quot;</code> when groups differ in size; <code>element=&quot;step&quot;</code> when several curves overlap.</li>
+<li><strong>Not</strong> for tiny samples, where the bin choice drives the picture — use <code>ecdfplot</code> or a <code>stripplot</code> instead.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.histplot.html"><code>histplot</code> docs</a></p>
+</div></section><section class="chart" id="kdeplot"><h2><a href="#kdeplot"><code>kdeplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. Places a smooth &quot;bump&quot; on each observation and adds them up into a
+continuous density curve — no bin edges. Pass <code>y</code> as well and it becomes a 2-D
+density with contours.</p>
+</div><figure><img loading="lazy" src="assets/full/2_kdeplot_1d.png" alt="kdeplot"><img loading="lazy" src="assets/full/2_kdeplot_2d.png" alt="kdeplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="c1"># 1-D: one skewed variable, on a log scale</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">housing</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"median_income"</span><span class="p">,</span> <span class="n">log_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Median income density (log scale) — roughly log-normal"</span><span class="p">)</span>
+</pre></div>
+</div><div class="code"><div class="highlight"><pre><span></span><span class="c1"># 2-D: joint density of two variables, one filled set of contours per group</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"bill_length_mm"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"bill_depth_mm"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Bivariate density of bill dimensions, by species"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>A smooth stand-in for the histogram that is easy to overlay for several groups.</li>
+<li>2-D (<code>x</code> <strong>and</strong> <code>y</code>): contours show where a joint distribution concentrates without the clutter of a scatter.</li>
+<li><code>bw_adjust</code> tunes the smoothing; <code>log_scale=True</code> handles skew; <code>common_norm=False</code> makes each group's curve integrate to 1 on its own.</li>
+<li><strong>Not</strong> for bounded or spiky data — the smoothing bleeds past hard limits (density below zero for a non-negative quantity) and can invent or flatten modes. Fall back to <code>histplot</code> / <code>ecdfplot</code> then.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.kdeplot.html"><code>kdeplot</code> docs</a></p>
+</div></section><section class="chart" id="ecdfplot"><h2><a href="#ecdfplot"><code>ecdfplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. For every value on the x-axis, plots the fraction of observations
+less than or equal to it. No bins, no smoothing, nothing to tune.</p>
+</div><figure><img loading="lazy" src="assets/full/2_ecdfplot.png" alt="ecdfplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">ecdfplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"flipper_length_mm"</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Empirical CDF of flipper length, by species"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>The least distorting view of a distribution — every observation is drawn exactly, so it is reliable even for small samples.</li>
+<li>Reading percentiles straight off the y-axis (0.5 → median), and comparing groups by the gap between curves.</li>
+<li>Spotting where two groups diverge: parallel curves = a shift, crossing curves = a difference in spread.</li>
+<li><strong>Not</strong> the most intuitive for an audience raised on histograms — peaks and gaps appear as changes in slope, not bumps.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.ecdfplot.html"><code>ecdfplot</code> docs</a></p>
+</div></section><section class="chart" id="rugplot"><h2><a href="#rugplot"><code>rugplot</code></p>
+</a></h2><div class="desc"><p>Axes-level. Draws one short tick per observation along an axis. Almost always a
+layer <em>under</em> another plot rather than a chart on its own.</p>
+</div><figure><img loading="lazy" src="assets/full/2_rugplot.png" alt="rugplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"bill_length_mm"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"bill_depth_mm"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">rugplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"bill_length_mm"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"bill_depth_mm"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Scatter with a marginal rug on both axes"</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>Putting the raw observations back under a summary (a KDE, a regression, a scatter) so the reader sees sample size and clustering.</li>
+<li>A lightweight marginal that needs no extra panel.</li>
+<li><strong>Not</strong> a standalone chart, and useless once N is large — the ticks merge into a solid bar. Use <code>alpha=</code>, <code>height=</code>, or a real marginal histogram (<code>jointplot</code>, <code>displot(..., rug=True)</code>) instead.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.rugplot.html"><code>rugplot</code> docs</a></p>
+</div></section><section class="chart" id="displot"><h2><a href="#displot"><code>displot</code></p>
+</a></h2><div class="desc"><p>Figure-level. The faceting front-end to the whole family: <code>kind=&quot;hist&quot;</code>
+(default), <code>&quot;kde&quot;</code> or <code>&quot;ecdf&quot;</code>, plus <code>row</code> / <code>col</code> and a managed legend.</p>
+</div><figure><img loading="lazy" src="assets/full/2_displot.png" alt="displot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">displot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">tips</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"total_bill"</span><span class="p">,</span>
+    <span class="n">col</span><span class="o">=</span><span class="s2">"time"</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"sex"</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"hist"</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">"Total bill ($)"</span><span class="p">,</span> <span class="s2">"Count"</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"Bill distribution by service time and sex"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.03</span><span class="p">)</span>
+</pre></div>
+</div><div class="bestfor"><p><strong>Best for</strong></p>
+<ul>
+<li>&quot;How does this distribution change across subgroups?&quot; — <code>row</code> / <code>col</code> split the data into a grid, one distribution per panel.</li>
+<li>Switching representation without switching function: <code>kind=&quot;hist&quot; | &quot;kde&quot; | &quot;ecdf&quot;</code>, with <code>kde=True</code> / <code>rug=True</code> to layer.</li>
+<li>Figure-level housekeeping: shared axes, one legend, consistent binning across panels.</li>
+<li><strong>Not</strong> for placing a distribution on a specific <code>Axes</code> in a hand-built figure — call <code>histplot</code> / <code>kdeplot</code> / <code>ecdfplot</code> directly.</li>
+</ul>
+<p><a href="https://seaborn.pydata.org/generated/seaborn.displot.html"><code>displot</code> docs</a></p>
+</div></section>
+
+<footer>Generated from <a href="https://github.com/omri-sabag83/The-Seaborn-Portfolio/blob/main/2_Distributions.ipynb"><code>2_Distributions.ipynb</code></a> &mdash;
+edit the notebook and rerun <code>build_site.py</code>.</footer>
+</main>
+
+</body>
+</html>
