@@ -37,7 +37,7 @@
 <section class="chart" id="facetgrid"><h2><a href="#facetgrid"><code>FacetGrid</code></p>
 </a></h2><div class="desc"><p>Figure-level. Build an empty grid keyed by <code>row</code> / <code>col</code>, then <code>.map()</code> (or
 <code>.map_dataframe()</code>) a plotting function onto every panel. The engine behind
-<code>relplot</code> / <code>displot</code> / <code>catplot</code>.</p>
+<a href="1-relationships.html#relplot"><code>relplot</code></a> / <a href="2-distributions.html#displot"><code>displot</code></a> / <a href="3-comparing-categories.html#catplot"><code>catplot</code></a>.</p>
 </div><figure><img loading="lazy" src="assets/full/5_facetgrid.png" alt="FacetGrid"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">FacetGrid</span><span class="p">(</span>
     <span class="n">tips</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="s2">"smoker"</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">"time"</span><span class="p">,</span>
     <span class="n">margin_titles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span>
@@ -51,7 +51,7 @@
 <ul>
 <li>Small multiples of a plot the figure-level wrappers don't offer, or when you want to layer several <code>.map()</code> calls on the same grid.</li>
 <li><code>margin_titles=True</code>, <code>col_wrap=</code>, <code>sharex</code> / <code>sharey</code>, <code>despine=</code> for the usual adjustments.</li>
-<li><strong>Not</strong> needed when <code>relplot</code> / <code>displot</code> / <code>catplot</code> already draw what you want — those <em>are</em> a <code>FacetGrid</code> with a friendlier signature and a managed legend.</li>
+<li><strong>Not</strong> needed when <a href="1-relationships.html#relplot"><code>relplot</code></a> / <a href="2-distributions.html#displot"><code>displot</code></a> / <a href="3-comparing-categories.html#catplot"><code>catplot</code></a> already draw what you want — those <em>are</em> a <a href="#facetgrid"><code>FacetGrid</code></a> with a friendlier signature and a managed legend.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.FacetGrid.html"><code>FacetGrid</code> docs</a></p>
 </div></section><section class="chart" id="pairgrid"><h2><a href="#pairgrid"><code>PairGrid</code></p>
@@ -67,8 +67,8 @@ upper triangle, lower triangle and diagonal each controlled separately.</p>
 </div><div class="bestfor"><p><strong>Best for</strong></p>
 <ul>
 <li>Choosing a <em>different</em> plot per region: raw scatter above the diagonal, smoothed density below, a 1-D distribution on it (<code>map_upper</code> / <code>map_lower</code> / <code>map_diag</code>).</li>
-<li>Any per-cell plot <code>pairplot</code> doesn't expose.</li>
-<li><strong>Not</strong> the quick route (that's <code>pairplot</code>), and it turns into a wall of tiny panels past ~6–8 variables.</li>
+<li>Any per-cell plot <a href="#pairplot"><code>pairplot</code></a> doesn't expose.</li>
+<li><strong>Not</strong> the quick route (that's <a href="#pairplot"><code>pairplot</code></a>), and it turns into a wall of tiny panels past ~6–8 variables.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.PairGrid.html"><code>PairGrid</code> docs</a></p>
 </div></section><section class="chart" id="jointgrid"><h2><a href="#jointgrid"><code>JointGrid</code></p>
@@ -83,11 +83,11 @@ axis — the joint layer and the marginal layers set independently.</p>
 <ul>
 <li>A scatter (or any bivariate plot) where you also want to see each variable's own distribution, and the joint / marginal layers need different functions or extra layers (a regression plus a rug, say).</li>
 <li><code>plot_joint</code> and <code>plot_marginals</code> take any seaborn or matplotlib function.</li>
-<li><strong>Not</strong> worth the extra lines for a standard scatter-plus-histogram — <code>jointplot</code> does that in one call.</li>
+<li><strong>Not</strong> worth the extra lines for a standard scatter-plus-histogram — <a href="#jointplot"><code>jointplot</code></a> does that in one call.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.JointGrid.html"><code>JointGrid</code> docs</a></p>
 </div></section><section class="chart" id="pairplot"><h2><a href="#pairplot"><code>pairplot</code></p>
-</a></h2><div class="desc"><p>Figure-level. The one-call <code>PairGrid</code>: a scatter matrix with a distribution on
+</a></h2><div class="desc"><p>Figure-level. The one-call <a href="#pairgrid"><code>PairGrid</code></a>: a scatter matrix with a distribution on
 the diagonal. <code>corner=True</code> drops the redundant upper half.</p>
 </div><figure><img loading="lazy" src="assets/full/5_pairplot.png" alt="pairplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">pairplot</span><span class="p">(</span>
     <span class="n">penguins</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">PENGUIN_NUM</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"species"</span><span class="p">,</span>
@@ -100,11 +100,11 @@ the diagonal. <code>corner=True</code> drops the redundant upper half.</p>
 <ul>
 <li>The fastest way to eyeball every pairwise relationship and every one-variable distribution at once, split by <code>hue</code>.</li>
 <li><code>diag_kind=&quot;hist&quot; | &quot;kde&quot;</code>, <code>kind=&quot;scatter&quot; | &quot;reg&quot;</code>, <code>corner=True</code>.</li>
-<li><strong>Not</strong> customisable past its keywords — move to <code>PairGrid</code> when you hit that wall — and impractical for many variables.</li>
+<li><strong>Not</strong> customisable past its keywords — move to <a href="#pairgrid"><code>PairGrid</code></a> when you hit that wall — and impractical for many variables.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.pairplot.html"><code>pairplot</code> docs</a></p>
 </div></section><section class="chart" id="jointplot"><h2><a href="#jointplot"><code>jointplot</code></p>
-</a></h2><div class="desc"><p>Figure-level. The one-call <code>JointGrid</code>: <code>kind=</code> sets the central plot, the
+</a></h2><div class="desc"><p>Figure-level. The one-call <a href="#jointgrid"><code>JointGrid</code></a>: <code>kind=</code> sets the central plot, the
 marginals follow automatically.</p>
 </div><figure><img loading="lazy" src="assets/full/5_jointplot.png" alt="jointplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">housing</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"median_income"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"median_house_value"</span><span class="p">,</span>
@@ -116,7 +116,7 @@ marginals follow automatically.</p>
 <ul>
 <li>A quick bivariate view with marginals: <code>kind=&quot;scatter&quot; | &quot;kde&quot; | &quot;hist&quot; | &quot;hex&quot; | &quot;reg&quot;</code>.</li>
 <li><code>kind=&quot;hex&quot;</code> (here) is the one to use at large N — it bins the points into a density instead of an unreadable blob, and the $500k value cap shows up as a bright horizontal band.</li>
-<li><strong>Not</strong> for more than one grouping, or bespoke joint / marginal layers — that's <code>JointGrid</code>.</li>
+<li><strong>Not</strong> for more than one grouping, or bespoke joint / marginal layers — that's <a href="#jointgrid"><code>JointGrid</code></a>.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.jointplot.html"><code>jointplot</code> docs</a></p>
 </div></section>

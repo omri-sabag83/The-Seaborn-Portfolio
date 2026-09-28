@@ -54,7 +54,7 @@ relate. Extra variables map onto <code>hue</code>, <code>size</code>, <code>styl
 <li>Two continuous variables, one row per observation — the first look at whether and how they relate.</li>
 <li>Layering in a third or fourth variable through <code>hue</code> / <code>size</code> / <code>style</code>.</li>
 <li>Spotting clusters, outliers and non-linear shape <em>before</em> modelling anything.</li>
-<li><strong>Not</strong> when N is large and points pile up (overplotting) — switch to a 2-D <code>histplot</code>/<code>kdeplot</code>, or use <code>alpha</code> and sampling.</li>
+<li><strong>Not</strong> when N is large and points pile up (overplotting) — switch to a 2-D <a href="2-distributions.html#histplot"><code>histplot</code></a>/<a href="2-distributions.html#kdeplot"><code>kdeplot</code></a>, or use <code>alpha</code> and sampling.</li>
 </ul>
 <p>Note the trap this chart catches: pooled across species the cloud slopes <em>down</em>, but
 within each species the relationship is <em>positive</em> (Simpson's paradox). <code>hue</code> is what
@@ -75,14 +75,14 @@ confidence band.</p>
 </div><div class="bestfor"><p><strong>Best for</strong></p>
 <ul>
 <li>A response measured along an <em>ordered</em> axis — time, dose, position — where connecting points implies continuity.</li>
-<li>Data with repeats per x: <code>lineplot</code> collapses them to an estimator and shades the uncertainty automatically (<code>errorbar=(&quot;ci&quot;, 95)</code>, <code>&quot;se&quot;</code>, <code>(&quot;pi&quot;, 95)</code>, …).</li>
+<li>Data with repeats per x: <a href="#lineplot"><code>lineplot</code></a> collapses them to an estimator and shades the uncertainty automatically (<code>errorbar=(&quot;ci&quot;, 95)</code>, <code>&quot;se&quot;</code>, <code>(&quot;pi&quot;, 95)</code>, …).</li>
 <li>Comparing a handful of series with <code>hue</code>.</li>
 <li><strong>Not</strong> for unordered categories (the line invents a trend that isn't there), and not for dozens of overlapping series (&quot;spaghetti&quot;) — facet instead.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.lineplot.html"><code>lineplot</code> docs</a></p>
 </div></section><section class="chart" id="relplot"><h2><a href="#relplot"><code>relplot</code></p>
 </a></h2><div class="desc"><p>Figure-level. The same scatter or line (<code>kind=&quot;scatter&quot;</code> / <code>&quot;line&quot;</code>), but split
-into a grid of small multiples with <code>row</code> / <code>col</code>. Returns a <code>FacetGrid</code>.</p>
+into a grid of small multiples with <code>row</code> / <code>col</code>. Returns a <a href="5-multiples-and-grids.html#facetgrid"><code>FacetGrid</code></a>.</p>
 </div><figure><img loading="lazy" src="assets/full/1_relplot.png" alt="relplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">tickers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"AAPL"</span><span class="p">,</span> <span class="s2">"MSFT"</span><span class="p">,</span> <span class="s2">"AMZN"</span><span class="p">,</span> <span class="s2">"NFLX"</span><span class="p">]</span>
 <span class="n">subset</span> <span class="o">=</span> <span class="n">sp500</span><span class="p">[</span><span class="n">sp500</span><span class="p">[</span><span class="s2">"ticker"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">tickers</span><span class="p">)]</span>
 
@@ -101,10 +101,10 @@ into a grid of small multiples with <code>row</code> / <code>col</code>. Returns
 </pre></div>
 </div><div class="bestfor"><p><strong>Best for</strong></p>
 <ul>
-<li>Taking a <code>scatterplot</code> / <code>lineplot</code> and asking the same question across many subgroups, when one overlaid plot would be too busy.</li>
+<li>Taking a <a href="#scatterplot"><code>scatterplot</code></a> / <a href="#lineplot"><code>lineplot</code></a> and asking the same question across many subgroups, when one overlaid plot would be too busy.</li>
 <li>Figure-level conveniences: it owns the whole figure, wraps facets (<code>col_wrap</code>), and places one shared legend outside the axes.</li>
 <li><code>facet_kws={&quot;sharey&quot;: False}</code> when panels live on very different scales (as here).</li>
-<li><strong>Not</strong> when you need to drop the plot onto a specific matplotlib <code>Axes</code> or combine it with other artists — use the axes-level <code>scatterplot</code> / <code>lineplot</code> for that.</li>
+<li><strong>Not</strong> when you need to drop the plot onto a specific matplotlib <code>Axes</code> or combine it with other artists — use the axes-level <a href="#scatterplot"><code>scatterplot</code></a> / <a href="#lineplot"><code>lineplot</code></a> for that.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.relplot.html"><code>relplot</code> docs</a></p>
 </div></section><section class="chart" id="regplot"><h2><a href="#regplot"><code>regplot</code></p>
@@ -127,7 +127,7 @@ confidence band — a fit you can eyeball, in one call.</p>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.regplot.html"><code>regplot</code> docs</a></p>
 </div></section><section class="chart" id="lmplot"><h2><a href="#lmplot"><code>lmplot</code></p>
-</a></h2><div class="desc"><p>Figure-level. <code>regplot</code>'s fit, drawn on a <code>FacetGrid</code>: split by <code>col</code> / <code>row</code>
+</a></h2><div class="desc"><p>Figure-level. <a href="#regplot"><code>regplot</code></a>'s fit, drawn on a <a href="5-multiples-and-grids.html#facetgrid"><code>FacetGrid</code></a>: split by <code>col</code> / <code>row</code>
 and/or <code>hue</code> to ask whether the relationship holds in every subgroup.</p>
 </div><figure><img loading="lazy" src="assets/full/1_lmplot.png" alt="lmplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">tips</span><span class="p">,</span>
@@ -141,8 +141,8 @@ and/or <code>hue</code> to ask whether the relationship holds in every subgroup.
 </div><div class="bestfor"><p><strong>Best for</strong></p>
 <ul>
 <li>&quot;Does this trend look the same for everyone?&quot; — one fitted line per facet / colour, on shared axes for easy comparison.</li>
-<li>Anything <code>regplot</code> accepts (<code>order</code>, <code>logistic</code>, <code>lowess</code>, <code>robust</code>) carried across the grid.</li>
-<li><strong>Not</strong> for a single panel (use <code>regplot</code>) or for scatters you don't want a regression on (use <code>relplot</code>).</li>
+<li>Anything <a href="#regplot"><code>regplot</code></a> accepts (<code>order</code>, <code>logistic</code>, <code>lowess</code>, <code>robust</code>) carried across the grid.</li>
+<li><strong>Not</strong> for a single panel (use <a href="#regplot"><code>regplot</code></a>) or for scatters you don't want a regression on (use <a href="#relplot"><code>relplot</code></a>).</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.lmplot.html"><code>lmplot</code> docs</a></p>
 </div></section><section class="chart" id="residplot"><h2><a href="#residplot"><code>residplot</code></p>

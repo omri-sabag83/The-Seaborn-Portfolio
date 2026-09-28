@@ -15,7 +15,7 @@
   <h1>6 &middot; The objects interface (<code>seaborn.objects</code>)</h1>
   <p class="question"></p>
   <table><thead><tr><th>#</th><th>Composition</th><th>Rebuilds</th></tr></thead><tbody><tr><td>1</td><td><a href="#1-so-dot-a-scatter"><code>so.Dot</code></a></td><td>a scatter</td></tr><tr><td>2</td><td><a href="#2-so-line-so-agg-an-aggregated-trend-line"><code>so.Line</code> + <code>so.Agg</code></a></td><td>an aggregated trend line</td></tr><tr><td>3</td><td><a href="#3-so-bar-so-agg-so-dodge-grouped-bars"><code>so.Bar</code> + <code>so.Agg</code> + <code>so.Dodge</code></a></td><td>grouped bars</td></tr><tr><td>4</td><td><a href="#4-so-line-so-band-so-est-a-line-with-a-confidence-band"><code>so.Line</code> + <code>so.Band</code> + <code>so.Est</code></a></td><td>a line with a confidence band</td></tr><tr><td>5</td><td><a href="#5-so-dots-so-jitter-a-strip-plot"><code>so.Dots</code> + <code>so.Jitter</code></a></td><td>a strip plot</td></tr><tr><td>6</td><td><a href="#6-so-bars-so-hist-a-histogram"><code>so.Bars</code> + <code>so.Hist</code></a></td><td>a histogram</td></tr><tr><td>7</td><td><a href="#7-so-dots-so-line-so-polyfit-a-fit-over-raw-points"><code>so.Dots</code> + (<code>so.Line</code> + <code>so.PolyFit</code>)</a></td><td>a regression fit over raw points</td></tr><tr><td>8</td><td><a href="#8-so-area-so-agg-so-stack-a-stacked-area-chart"><code>so.Area</code> + <code>so.Agg</code> + <code>so.Stack</code></a></td><td>a stacked area chart</td></tr><tr><td>9</td><td><a href="#9-facet-col-small-multiples"><code>.facet(col=…)</code></a></td><td>small multiples</td></tr><tr><td>10</td><td><a href="#10-pair-and-so-text"><code>.pair(…)</code> and <code>so.Text</code></a></td><td>a scatter matrix; labelled points</td></tr></tbody></table>
-  <div class="method"><p>one minimal composition per row; each ends with <code>.save(&quot;images/6_*.png&quot;)</code>.</p>
+  <div class="method"><p>one minimal composition per row. Each ends by saving a PNG to <code>images/</code>.</p>
 </div>
   <details class="imports"><summary>Imports for this notebook</summary>
   <div class="code"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -139,15 +139,15 @@ band, bars + labels) — <code>.add()</code> stacks cleanly, where the classic A
 several functions that don't always agree on defaults.</li>
 <li>You want <strong>one consistent syntax</strong> for everything: the same <code>Plot</code> /
 <code>.add()</code> / <code>.facet()</code> / <code>.pair()</code> / <code>.scale()</code> grammar covers scatter, line,
-bar, area, histogram… no separate <code>scatterplot</code> / <code>lineplot</code> / <code>barplot</code>
+bar, area, histogram… no separate <a href="1-relationships.html#scatterplot"><code>scatterplot</code></a> / <a href="1-relationships.html#lineplot"><code>lineplot</code></a> / <a href="3-comparing-categories.html#barplot"><code>barplot</code></a>
 signatures to remember.</li>
 <li>You want to <strong>swap a Stat or Move without changing the Mark</strong> — <code>so.Bar()</code>
 with <code>so.Hist()</code> is a histogram, with <code>so.Agg()</code> a bar chart.</li>
 </ul>
 <p><strong>Stick with the classic functions when:</strong></p>
 <ul>
-<li>You need something the objects interface doesn't have yet — <code>PairGrid</code>-style
-per-region control, <code>clustermap</code>, <code>jointplot</code>'s marginal axes, <code>regplot</code>'s
+<li>You need something the objects interface doesn't have yet — <a href="5-multiples-and-grids.html#pairgrid"><code>PairGrid</code></a>-style
+per-region control, <a href="4-matrices-and-correlation.html#clustermap"><code>clustermap</code></a>, <a href="5-multiples-and-grids.html#jointplot"><code>jointplot</code></a>'s marginal axes, <a href="1-relationships.html#regplot"><code>regplot</code></a>'s
 bootstrap CI.</li>
 <li>You're leaning on the large body of examples and Stack Overflow answers written
 for the function API.</li>

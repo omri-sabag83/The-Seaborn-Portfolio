@@ -120,6 +120,63 @@ def docs_url_from(md_block: str) -> str | None:
     return m.group(1) if m else None
 
 
+# ------------------------------------------------------------- cross-linking
+def normalize_name(name: str) -> str:
+    """`.facet(col=...)` and `.facet()` should both key as `.facet` — strip a
+    trailing (...) call, leave bare identifiers (`heatmap`, `so.Dot`) as-is."""
+    return re.sub(r"\([^()]*\)$", "", name.strip())
+
+
+def build_name_map(groups: list["Group"]) -> dict[str, tuple[str, str]]:
+    """name -> (slug, anchor), for headings that name an actual chart.
+
+    Notebook 6 is skipped entirely (`g.has_chart_names` is False): its
+    compositions are named after Marks/Stats/Moves (`so.Dot`, `so.Est`,
+    `.facet(col=...)`), not chart types, so none of them are ever a link
+    target — only its closing paragraph links *out* to real chart names
+    elsewhere. Within notebooks 1-5, a heading with exactly one identifier
+    names its chart (`scatterplot`); a name used by 2+ such headings
+    (`heatmap`, in both notebook 4 sections) is ambiguous and left out too."""
+    targets: dict[str, set[tuple[str, str]]] = {}
+    for g in groups:
+        if not g.has_chart_names:
+            continue
+        for s in g.sections:
+            idents = re.findall(r"`([^`]+)`", s.heading)
+            if len(idents) != 1:
+                continue
+            targets.setdefault(normalize_name(idents[0]), set()).add((g.slug, s.anchor))
+    return {name: next(iter(dests)) for name, dests in targets.items() if len(dests) == 1}
+
+
+_CODE_SPAN_RE = re.compile(r"<code>([^<]+)</code>")
+_ANCHOR_SPAN_RE = re.compile(r"<a\b[^>]*>.*?</a>", re.S)
+
+
+def linkify(html_str: str, name_map: dict[str, tuple[str, str]], current_slug: str) -> str:
+    """Wrap every `<code>name</code>` span that names another chart section in
+    a link to it (same-page: `#anchor`; other page: `slug.html#anchor`).
+    Spans already inside a link (e.g. the docs-link line) are left alone."""
+    if not html_str or not name_map:
+        return html_str
+    protected = [m.span() for m in _ANCHOR_SPAN_RE.finditer(html_str)]
+
+    def guarded(pos: int) -> bool:
+        return any(a <= pos < b for a, b in protected)
+
+    def repl(m: re.Match) -> str:
+        if guarded(m.start()):
+            return m.group(0)
+        target = name_map.get(normalize_name(m.group(1)))
+        if not target:
+            return m.group(0)
+        slug, anchor = target
+        href = f"#{anchor}" if slug == current_slug else f"{slug}.html#{anchor}"
+        return f'<a href="{href}">{m.group(0)}</a>'
+
+    return _CODE_SPAN_RE.sub(repl, html_str)
+
+
 # ----------------------------------------------------------------- notebook parse
 class Section:
     def __init__(self):
@@ -127,9 +184,11 @@ class Section:
         self.name = ""          # card label
         self.oneliner = ""      # card sub-text (from the cell-0 table)
         self.anchor = ""
+        self.desc_md = ""        # raw; rendered to desc_html once the name map exists
         self.desc_html = ""
         self.code_snippets: list[str] = []
         self.figures: list[str] = []          # basenames in images/
+        self.bestfor_md = ""
         self.bestfor_html = ""
         self.docs_url: str | None = None
 
@@ -144,12 +203,18 @@ class Group:
         self.num = ""
         self.title = ""
         self.title_html = ""
+        self.slug = ""
         self.question = ""
         self.method_html = ""
         self.table_html = ""
         self.imports_code = ""
         self.sections: list[Section] = []
-        self.trailing_html = ""   # nb6's closing prose section
+        self.trailing_md = ""     # nb6's closing prose section, raw
+        self.trailing_html = ""
+        self.has_chart_names = True  # False for notebook 6: its headings name
+                                      # Marks/Stats/Moves, not charts, so they
+                                      # never enter the name map, and its own
+                                      # per-composition text is never linkified
 
 
 def parse_notebook(path: Path) -> Group:
@@ -171,6 +236,7 @@ def parse_notebook(path: Path) -> Group:
     # the middle column, not the row number.
     numbered_table = bool(table_rows) and len(table_rows[0]) == 3
     name_col = 1 if numbered_table else 0
+    g.has_chart_names = not numbered_table  # nb6's compositions aren't charts
 
     # --- cell 1: imports ---------------------------------------------------
     g.imports_code = cells[1].source.strip()
@@ -190,14 +256,14 @@ def parse_notebook(path: Path) -> Group:
             if nxt is None or (
                 nxt.cell_type == "markdown" and nxt.source.lstrip().startswith("## ")
             ):
-                g.trailing_html = _md(body.replace("## ", "### ", 1))
+                g.trailing_md = body.replace("## ", "### ", 1)
                 i += 1
                 continue
 
             s = Section()
             s.heading = heading_line
             s.anchor = slugify(heading_line)
-            s.desc_html = _md(rest) if rest else ""
+            s.desc_md = rest
 
             # card name / one-liner from the cell-0 table, by position
             if sec_index < len(table_rows):
@@ -223,7 +289,7 @@ def parse_notebook(path: Path) -> Group:
             if i < len(cells) and cells[i].cell_type == "markdown" \
                     and cells[i].source.lstrip().startswith("**Best for"):
                 note = cells[i].source.strip()
-                s.bestfor_html = _md(note)
+                s.bestfor_md = note
                 s.docs_url = docs_url_from(note)
                 i += 1
 
@@ -379,6 +445,7 @@ h1{font-size:1.9rem;margin:.2em 0 .1em}
 h2{font-size:1.35rem;margin:1.8em 0 .4em}
 h3{font-size:1.05rem}
 code{background:var(--soft);padding:.1em .35em;border-radius:4px;font-size:.9em}
+a code{font-weight:600}
 pre{margin:0}
 table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.92rem}
 th,td{border:1px solid var(--line);padding:.4em .6em;text-align:left;vertical-align:top}
@@ -411,7 +478,6 @@ th{background:var(--soft)}
 .method{color:var(--muted);font-size:.92rem}
 .imports{margin:1em 0}
 .imports summary{cursor:pointer;color:var(--accent);font-size:.9rem}
-.grouppage table td a{font-weight:600}
 
 .chart{border-bottom:1px solid var(--line);padding:1.6em 0}
 .chart:last-of-type{border-bottom:none}
@@ -452,6 +518,23 @@ def main() -> None:
     (DOCS / ".nojekyll").write_text("")
 
     groups = [parse_notebook(REPO / fname) for fname, _ in NOTEBOOKS]
+    for (_, slug), g in zip(NOTEBOOKS, groups):
+        g.slug = slug
+
+    # Cross-link chart names mentioned in descriptions / "Best for" notes /
+    # notebook 6's closing section to the section they name — but only once
+    # every section's anchor exists, so this runs as a second pass.
+    name_map = build_name_map(groups)
+    for g in groups:
+        for s in g.sections:
+            desc = _md(s.desc_md) if s.desc_md else ""
+            bestfor = _md(s.bestfor_md) if s.bestfor_md else ""
+            # Notebook 6's per-composition text names Marks/Stats/Moves, not
+            # charts, so it's never linkified — only its closing paragraph is.
+            s.desc_html = linkify(desc, name_map, g.slug) if g.has_chart_names else desc
+            s.bestfor_html = linkify(bestfor, name_map, g.slug) if g.has_chart_names else bestfor
+        if g.trailing_md:
+            g.trailing_html = linkify(_md(g.trailing_md), name_map, g.slug)
 
     # figures -> assets/full + assets/thumbs
     used = []

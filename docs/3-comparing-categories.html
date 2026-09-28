@@ -52,13 +52,13 @@ difference between the two is visible directly.</p>
 <li>Works at <strong>any N</strong>: it never refuses, it just gets denser. <code>alpha</code> and <code>jitter</code> manage the crowding; <code>dodge=True</code> splits <code>hue</code> groups.</li>
 <li>As a thin layer <em>under</em> a box or violin, so the summary and the raw points sit together.</li>
 </ul>
-<p><strong><code>stripplot</code> vs <code>swarmplot</code></strong> — same goal (draw every point), opposite method:</p>
+<p><strong><a href="#stripplot"><code>stripplot</code></a> vs <a href="#swarmplot"><code>swarmplot</code></a></strong> — same goal (draw every point), opposite method:</p>
 <table>
 <thead>
 <tr>
   <th></th>
-  <th><code>stripplot</code></th>
-  <th><code>swarmplot</code></th>
+  <th><a href="#stripplot"><code>stripplot</code></a></th>
+  <th><a href="#swarmplot"><code>swarmplot</code></a></th>
 </tr>
 </thead>
 <tbody>
@@ -89,8 +89,8 @@ difference between the two is visible directly.</p>
 </tr>
 </tbody>
 </table>
-<p>Reach for <code>stripplot</code> when N is large or it's just a backing layer; reach for
-<code>swarmplot</code> when N is small and the shape of the pile is the point.</p>
+<p>Reach for <a href="#stripplot"><code>stripplot</code></a> when N is large or it's just a backing layer; reach for
+<a href="#swarmplot"><code>swarmplot</code></a> when N is small and the shape of the pile is the point.</p>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.stripplot.html"><code>stripplot</code> docs</a></p>
 </div></section><section class="chart" id="swarmplot"><h2><a href="#swarmplot"><code>swarmplot</code></p>
 </a></h2><div class="desc"><p>Axes-level. The <strong>same points</strong> as the strip plot above, but each one is shifted
@@ -109,10 +109,10 @@ so the outline reads like a discrete violin.</p>
 <ul>
 <li>The most honest categorical view when it fits: every point drawn, none hidden, and the density is legible from the swarm's width — no binning, no smoothing.</li>
 <li>Small N — a few hundred points per category at most.</li>
-<li><strong>Not</strong> for large N: seaborn prints <code>X% of the points cannot be placed</code> and silently drops them, so the picture is quietly wrong. Switch to <code>violinplot</code>, or <code>boxplot</code> with a <code>stripplot</code> layer.</li>
+<li><strong>Not</strong> for large N: seaborn prints <code>X% of the points cannot be placed</code> and silently drops them, so the picture is quietly wrong. Switch to <a href="#violinplot"><code>violinplot</code></a>, or <a href="#boxplot"><code>boxplot</code></a> with a <a href="#stripplot"><code>stripplot</code></a> layer.</li>
 </ul>
-<p>Compared with the strip plot above: <code>stripplot</code> is faster and unbounded but its
-random jitter hides how many points overlap; <code>swarmplot</code> shows that exactly, at
+<p>Compared with the strip plot above: <a href="#stripplot"><code>stripplot</code></a> is faster and unbounded but its
+random jitter hides how many points overlap; <a href="#swarmplot"><code>swarmplot</code></a> shows that exactly, at
 the cost of a hard ceiling on N.</p>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.swarmplot.html"><code>swarmplot</code> docs</a></p>
 </div></section><section class="chart" id="boxplot"><h2><a href="#boxplot"><code>boxplot</code></p>
@@ -130,7 +130,7 @@ box, whiskers to 1.5×IQR, points beyond that.</p>
 <ul>
 <li>Comparing centre and spread across many groups at any N — compact, familiar, robust to outliers.</li>
 <li>Quick read of skew (median off-centre in the box) and of which groups overlap.</li>
-<li><strong>Not</strong> able to show <em>shape</em>: a two-humped group and a flat one can produce the same box. Overlay a <code>stripplot</code>, or use <code>violinplot</code>.</li>
+<li><strong>Not</strong> able to show <em>shape</em>: a two-humped group and a flat one can produce the same box. Overlay a <a href="#stripplot"><code>stripplot</code></a>, or use <a href="#violinplot"><code>violinplot</code></a>.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.boxplot.html"><code>boxplot</code> docs</a></p>
 </div></section><section class="chart" id="violinplot"><h2><a href="#violinplot"><code>violinplot</code></p>
@@ -170,7 +170,7 @@ dumped as a cloud of outliers. (Also called a letter-value plot.)</p>
 <ul>
 <li>Large samples (thousands+) where a boxplot's single whisker throws away most of the interesting tail.</li>
 <li>Seeing how skew and tail-heaviness change across categories.</li>
-<li><strong>Not</strong> worth it for small N — the extra boxes are just noise; a plain <code>boxplot</code> says the same thing.</li>
+<li><strong>Not</strong> worth it for small N — the extra boxes are just noise; a plain <a href="#boxplot"><code>boxplot</code></a> says the same thing.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.boxenplot.html"><code>boxenplot</code> docs</a></p>
 </div></section><section class="chart" id="pointplot"><h2><a href="#pointplot"><code>pointplot</code></p>
@@ -188,7 +188,7 @@ connected by lines across the category axis.</p>
 <ul>
 <li>Reading a <em>trend</em> across an ordered category, and interaction effects — do the <code>hue</code> lines stay parallel, or cross?</li>
 <li>A 0/1 outcome: the mean is a rate, so this is survival probability with a CI.</li>
-<li><strong>Not</strong> for nominal categories where &quot;between&quot; has no meaning — the connecting line implies an order that isn't there. Use <code>barplot</code>.</li>
+<li><strong>Not</strong> for nominal categories where &quot;between&quot; has no meaning — the connecting line implies an order that isn't there. Use <a href="#barplot"><code>barplot</code></a>.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.pointplot.html"><code>pointplot</code> docs</a></p>
 </div></section><section class="chart" id="barplot"><h2><a href="#barplot"><code>barplot</code></p>
@@ -206,12 +206,12 @@ connected by lines across the category axis.</p>
 <ul>
 <li>Comparing a handful of summary values when the zero baseline is meaningful.</li>
 <li>Swappable statistic: <code>estimator=&quot;median&quot;</code>, <code>estimator=&quot;sum&quot;</code>, etc., with a matching <code>errorbar</code>.</li>
-<li><strong>Not</strong> for showing a distribution (it's one number per bar), and misleading when the quantity has no true zero — use <code>pointplot</code> then.</li>
+<li><strong>Not</strong> for showing a distribution (it's one number per bar), and misleading when the quantity has no true zero — use <a href="#pointplot"><code>pointplot</code></a> then.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.barplot.html"><code>barplot</code> docs</a></p>
 </div></section><section class="chart" id="countplot"><h2><a href="#countplot"><code>countplot</code></p>
-</a></h2><div class="desc"><p>Axes-level. A <code>barplot</code> whose statistic is &quot;how many rows&quot; — one bar per
-category or per <code>hue</code> combination. The categorical cousin of <code>histplot</code>.</p>
+</a></h2><div class="desc"><p>Axes-level. A <a href="#barplot"><code>barplot</code></a> whose statistic is &quot;how many rows&quot; — one bar per
+category or per <code>hue</code> combination. The categorical cousin of <a href="2-distributions.html#histplot"><code>histplot</code></a>.</p>
 </div><figure><img loading="lazy" src="assets/full/3_countplot.png" alt="countplot"></figure><div class="code"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">titanic</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="s2">"class"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">CLASS_ORDER</span><span class="p">,</span>
@@ -224,7 +224,7 @@ category or per <code>hue</code> combination. The categorical cousin of <code>hi
 <ul>
 <li>Frequencies of a categorical variable, and simple two-way cross-tabs via <code>hue</code>.</li>
 <li>A fast &quot;how is my data distributed across groups?&quot; before any analysis.</li>
-<li><strong>Not</strong> for an already-aggregated table — then it's <code>barplot(x=..., y=&quot;count&quot;)</code>.</li>
+<li><strong>Not</strong> for an already-aggregated table — then it's <a href="#barplot"><code>barplot(x=..., y=&quot;count&quot;)</code></a>.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.countplot.html"><code>countplot</code> docs</a></p>
 </div></section><section class="chart" id="catplot"><h2><a href="#catplot"><code>catplot</code></p>

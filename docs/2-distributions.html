@@ -49,7 +49,7 @@ each — the default first look at a distribution's shape.</p>
 <li><code>bins</code> / <code>binwidth</code> set the resolution — too few hides structure, too many shows noise.</li>
 <li>Comparing groups with <code>hue</code> + <code>multiple=</code>: <code>&quot;layer&quot;</code> (translucent overlay), <code>&quot;stack&quot;</code> (as here), <code>&quot;dodge&quot;</code>, <code>&quot;fill&quot;</code> (100 % composition).</li>
 <li><code>stat=&quot;density&quot;</code> or <code>&quot;probability&quot;</code> when groups differ in size; <code>element=&quot;step&quot;</code> when several curves overlap.</li>
-<li><strong>Not</strong> for tiny samples, where the bin choice drives the picture — use <code>ecdfplot</code> or a <code>stripplot</code> instead.</li>
+<li><strong>Not</strong> for tiny samples, where the bin choice drives the picture — use <a href="#ecdfplot"><code>ecdfplot</code></a> or a <a href="3-comparing-categories.html#stripplot"><code>stripplot</code></a> instead.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.histplot.html"><code>histplot</code> docs</a></p>
 </div></section><section class="chart" id="kdeplot"><h2><a href="#kdeplot"><code>kdeplot</code></p>
@@ -74,7 +74,7 @@ density with contours.</p>
 <li>A smooth stand-in for the histogram that is easy to overlay for several groups.</li>
 <li>2-D (<code>x</code> <strong>and</strong> <code>y</code>): contours show where a joint distribution concentrates without the clutter of a scatter.</li>
 <li><code>bw_adjust</code> tunes the smoothing; <code>log_scale=True</code> handles skew; <code>common_norm=False</code> makes each group's curve integrate to 1 on its own.</li>
-<li><strong>Not</strong> for bounded or spiky data — the smoothing bleeds past hard limits (density below zero for a non-negative quantity) and can invent or flatten modes. Fall back to <code>histplot</code> / <code>ecdfplot</code> then.</li>
+<li><strong>Not</strong> for bounded or spiky data — the smoothing bleeds past hard limits (density below zero for a non-negative quantity) and can invent or flatten modes. Fall back to <a href="#histplot"><code>histplot</code></a> / <a href="#ecdfplot"><code>ecdfplot</code></a> then.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.kdeplot.html"><code>kdeplot</code> docs</a></p>
 </div></section><section class="chart" id="ecdfplot"><h2><a href="#ecdfplot"><code>ecdfplot</code></p>
@@ -108,7 +108,7 @@ layer <em>under</em> another plot rather than a chart on its own.</p>
 <ul>
 <li>Putting the raw observations back under a summary (a KDE, a regression, a scatter) so the reader sees sample size and clustering.</li>
 <li>A lightweight marginal that needs no extra panel.</li>
-<li><strong>Not</strong> a standalone chart, and useless once N is large — the ticks merge into a solid bar. Use <code>alpha=</code>, <code>height=</code>, or a real marginal histogram (<code>jointplot</code>, <code>displot(..., rug=True)</code>) instead.</li>
+<li><strong>Not</strong> a standalone chart, and useless once N is large — the ticks merge into a solid bar. Use <code>alpha=</code>, <code>height=</code>, or a real marginal histogram (<a href="5-multiples-and-grids.html#jointplot"><code>jointplot</code></a>, <a href="#displot"><code>displot(..., rug=True)</code></a>) instead.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.rugplot.html"><code>rugplot</code> docs</a></p>
 </div></section><section class="chart" id="displot"><h2><a href="#displot"><code>displot</code></p>
@@ -129,7 +129,7 @@ layer <em>under</em> another plot rather than a chart on its own.</p>
 <li>&quot;How does this distribution change across subgroups?&quot; — <code>row</code> / <code>col</code> split the data into a grid, one distribution per panel.</li>
 <li>Switching representation without switching function: <code>kind=&quot;hist&quot; | &quot;kde&quot; | &quot;ecdf&quot;</code>, with <code>kde=True</code> / <code>rug=True</code> to layer.</li>
 <li>Figure-level housekeeping: shared axes, one legend, consistent binning across panels.</li>
-<li><strong>Not</strong> for placing a distribution on a specific <code>Axes</code> in a hand-built figure — call <code>histplot</code> / <code>kdeplot</code> / <code>ecdfplot</code> directly.</li>
+<li><strong>Not</strong> for placing a distribution on a specific <code>Axes</code> in a hand-built figure — call <a href="#histplot"><code>histplot</code></a> / <a href="#kdeplot"><code>kdeplot</code></a> / <a href="#ecdfplot"><code>ecdfplot</code></a> directly.</li>
 </ul>
 <p><a href="https://seaborn.pydata.org/generated/seaborn.displot.html"><code>displot</code> docs</a></p>
 </div></section>
