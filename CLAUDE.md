@@ -37,7 +37,8 @@ well-chosen dataset, plus a short written note on its best use cases. The goal i
   notebooks are committed **executed, with outputs**.
 - Cell 0 (markdown): `# N · <theme>` + the analytical question + a mini-table of the charts
   covered. Cell 1 (code): imports + `sns.set_theme(style="whitegrid")` (house style is set
-  in-cell, there is no shared style module).
+  in-cell), plus `import chart_style`: the one shared module, which adds a thin black frame
+  around every chart image (displayed and saved).
 - Per chart, in order:
   1. `## <function_name>` — one line: what it draws, figure-level vs axes-level.
   2. Code cell: minimal idiomatic example; ends with
